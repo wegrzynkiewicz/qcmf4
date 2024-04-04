@@ -6,3 +6,7 @@ export class OptionalLayoutType implements LayoutOptional, LayoutTrait<never> {
 }
 
 export const optional: LayoutOptional = new OptionalLayoutType();
+
+export function isOptionalLayoutType(value: any): value is LayoutOptional {
+  return value && value[layoutOptionalSymbol] === 1;
+}

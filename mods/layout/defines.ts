@@ -1,5 +1,3 @@
-import { JSONSchema } from "./schema/mod.ts";
-
 export type LayoutValidationErrorData = Record<string, unknown>;
 
 export interface LayoutValidationErrorDefinitionInput {
@@ -13,9 +11,9 @@ export interface LayoutValidationErrorDefinition {
 }
 
 export function registerLayoutValidationError(
-  input: LayoutValidationErrorDefinitionInput,
+  code: string,
+  message: string,
 ): LayoutValidationErrorDefinition {
-  const { code, message } = input;
   return { code, message };
 }
 
@@ -43,8 +41,6 @@ export interface LayoutTypeValidator<T> {
 }
 
 export class Layout<T> {
-  required = true;
-  schema: JSONSchema = {};
   constructor(
     public traits: UnknownLayoutTrait[],
   ) { }

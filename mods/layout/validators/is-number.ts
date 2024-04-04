@@ -1,9 +1,9 @@
 import { LayoutTypeValidationContext, LayoutTypeValidator, layoutTypeValidatorSymbol, registerLayoutValidationError } from "../defines.ts";
 
-export const notANumberErrorDef = registerLayoutValidationError({
-  code: "not-a-number",
-  message: "Value is not a number",
-});
+export const notANumberErrorDef = registerLayoutValidationError(
+  "not-a-number",
+  "Value is not a number",
+);
 
 export class IsNumberLayoutTypeValidator implements LayoutTypeValidator<number> {
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
