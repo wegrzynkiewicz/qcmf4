@@ -1,24 +1,25 @@
 import { assertEquals } from "../../deps.ts";
 import {
   array,
+  boolean,
   date,
   description,
+  greaterThan,
   InferLayout,
   integer,
   layout,
+  LayoutJSONSchemaCreator,
+  lessThanOrEqual,
   maxItems,
+  maxLength,
   minItems,
+  minLength,
   number,
   object,
   optional,
   string,
+  uniqueItems,
 } from "../mod.ts";
-import { LayoutJSONSchemaCreator } from "../schema/defs.ts";
-import { uniqueItems } from "../traits/array/unique-items.ts";
-import { greaterThan } from "../traits/number/greater-than.ts";
-import { lessThanOrEqual } from "../traits/number/less-than.ts";
-import { maxLength } from "../traits/string/max-length.ts";
-import { minLength } from "../traits/string/min-length.ts";
 
 const testLayout = layout(
   object({
@@ -36,6 +37,7 @@ const testLayout = layout(
         lessThanOrEqual(150),
       ),
     ),
+    isCompany: layout(boolean()),
     birthDate: layout(date()),
     address: layout(
       object({
@@ -61,6 +63,7 @@ Deno.test("validate complex example", () => {
     age: 4,
     name: "test",
     birthDate: new Date(),
+    isCompany: true,
     address: {
       city: "city",
       street: "street",
@@ -88,6 +91,9 @@ Deno.test("complex example json schema creation", () => {
         exclusiveMinimum: 0,
         type: "integer",
       },
+      isCompany: {
+        type: "boolean",
+      },
       birthDate: { type: "string", format: "date-time" },
       address: {
         type: "object",
@@ -106,6 +112,6 @@ Deno.test("complex example json schema creation", () => {
         uniqueItems: true,
       },
     },
-    required: ["name", "age", "birthDate", "address", "hobbies"],
+    required: ["name", "age", "isCompany", "birthDate", "address", "hobbies"],
   });
 });
