@@ -1,7 +1,7 @@
-import { InferLayoutObject, LayoutTrait, UnknownLayoutMap, layoutTraitSymbol, UnknownLayoutTrait } from "../defines.ts";
+import { InferLayoutObject, LayoutTrait, layoutTraitSymbol, UnknownLayoutMap, UnknownLayoutTrait } from "../defines.ts";
 import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext } from "../schema/defines.ts";
 import { layoutSchemaGeneratorSymbol } from "../schema/defines.ts";
-import { JSONSchema } from "../schema/mod.ts";
+import { JSONSchema } from "../schema/json-schema-types.ts";
 import { isOptionalLayoutType } from "./optional.ts";
 
 export function isRequiredField(traits: UnknownLayoutTrait[]): boolean {
@@ -13,11 +13,12 @@ export function isRequiredField(traits: UnknownLayoutTrait[]): boolean {
   return true;
 }
 
-export class LayoutObjectTrait<T extends UnknownLayoutMap> implements LayoutSchemaGenerator, LayoutTrait<InferLayoutObject<T>> {
+export class LayoutObjectTrait<T extends UnknownLayoutMap>
+  implements LayoutSchemaGenerator, LayoutTrait<InferLayoutObject<T>> {
   readonly [layoutTraitSymbol] = 1;
   constructor(
     public fields: T,
-  ) { }
+  ) {}
 
   [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
     const { schemaCreator } = context;
@@ -39,4 +40,4 @@ export class LayoutObjectTrait<T extends UnknownLayoutMap> implements LayoutSche
 
 export const object = <T extends UnknownLayoutMap>(fields: T): LayoutTrait<InferLayoutObject<T>> => {
   return new LayoutObjectTrait(fields);
-}
+};

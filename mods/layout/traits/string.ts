@@ -9,4 +9,4 @@ export const string = (
   ...validators: LayoutTypeValidator<string>[]
 ): LayoutTrait<string> => {
   return new StringLayoutType(validators);
-}
+};

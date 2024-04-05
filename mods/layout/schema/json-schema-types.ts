@@ -8,7 +8,7 @@
  * Primitive type
  * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.1.1
  */
-export type JSONSchema7TypeName =
+export type JSONSchemaTypeName =
   | "string" //
   | "number"
   | "integer"
@@ -21,22 +21,22 @@ export type JSONSchema7TypeName =
  * Primitive type
  * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.1.1
  */
-export type JSONSchema7Type =
+export type JSONSchemaType =
   | string //
   | number
   | boolean
-  | JSONSchema7Object
-  | JSONSchema7Array
+  | JSONSchemaObject
+  | JSONSchemaArray
   | null;
 
 // Workaround for infinite type recursion
-export interface JSONSchema7Object {
-  [key: string]: JSONSchema7Type;
+export interface JSONSchemaObject {
+  [key: string]: JSONSchemaType;
 }
 
 // Workaround for infinite type recursion
 // https://github.com/Microsoft/TypeScript/issues/3496#issuecomment-128553540
-export interface JSONSchema7Array extends Array<JSONSchema7Type> {}
+export interface JSONSchemaArray extends Array<JSONSchemaType> {}
 
 /**
  * Meta schema
@@ -49,17 +49,17 @@ export interface JSONSchema7Array extends Array<JSONSchema7Type> {}
  *
  * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-5
  */
-export type JSONSchema7Version = string;
+export type JSONSchemaVersion = string;
 
 /**
  * JSON Schema v7
  * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01
  */
-export type JSONSchema7Definition = JSONSchema7 | boolean;
-export interface JSONSchema7 {
+export type JSONSchemaDefinition = JSONSchema | boolean;
+export interface JSONSchema {
   $id?: string | undefined;
   $ref?: string | undefined;
-  $schema?: JSONSchema7Version | undefined;
+  $schema?: JSONSchemaVersion | undefined;
   $comment?: string | undefined;
 
   /**
@@ -67,15 +67,15 @@ export interface JSONSchema7 {
    * @see https://datatracker.ietf.org/doc/html/draft-bhutton-json-schema-validation-00#appendix-A
    */
   $defs?: {
-    [key: string]: JSONSchema7Definition;
+    [key: string]: JSONSchemaDefinition;
   } | undefined;
 
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.1
    */
-  type?: JSONSchema7TypeName | JSONSchema7TypeName[] | undefined;
-  enum?: JSONSchema7Type[] | undefined;
-  const?: JSONSchema7Type | undefined;
+  type?: JSONSchemaTypeName | JSONSchemaTypeName[] | undefined;
+  enum?: JSONSchemaType[] | undefined;
+  const?: JSONSchemaType | undefined;
 
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.2
@@ -96,12 +96,12 @@ export interface JSONSchema7 {
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.4
    */
-  items?: JSONSchema7Definition | JSONSchema7Definition[] | undefined;
-  additionalItems?: JSONSchema7Definition | undefined;
+  items?: JSONSchemaDefinition | JSONSchemaDefinition[] | undefined;
+  additionalItems?: JSONSchemaDefinition | undefined;
   maxItems?: number | undefined;
   minItems?: number | undefined;
   uniqueItems?: boolean | undefined;
-  contains?: JSONSchema7Definition | undefined;
+  contains?: JSONSchemaDefinition | undefined;
 
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.5
@@ -110,31 +110,31 @@ export interface JSONSchema7 {
   minProperties?: number | undefined;
   required?: string[] | undefined;
   properties?: {
-    [key: string]: JSONSchema7Definition;
+    [key: string]: JSONSchemaDefinition;
   } | undefined;
   patternProperties?: {
-    [key: string]: JSONSchema7Definition;
+    [key: string]: JSONSchemaDefinition;
   } | undefined;
-  additionalProperties?: JSONSchema7Definition | undefined;
+  additionalProperties?: JSONSchemaDefinition | undefined;
   dependencies?: {
-    [key: string]: JSONSchema7Definition | string[];
+    [key: string]: JSONSchemaDefinition | string[];
   } | undefined;
-  propertyNames?: JSONSchema7Definition | undefined;
+  propertyNames?: JSONSchemaDefinition | undefined;
 
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.6
    */
-  if?: JSONSchema7Definition | undefined;
-  then?: JSONSchema7Definition | undefined;
-  else?: JSONSchema7Definition | undefined;
+  if?: JSONSchemaDefinition | undefined;
+  then?: JSONSchemaDefinition | undefined;
+  else?: JSONSchemaDefinition | undefined;
 
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-6.7
    */
-  allOf?: JSONSchema7Definition[] | undefined;
-  anyOf?: JSONSchema7Definition[] | undefined;
-  oneOf?: JSONSchema7Definition[] | undefined;
-  not?: JSONSchema7Definition | undefined;
+  allOf?: JSONSchemaDefinition[] | undefined;
+  anyOf?: JSONSchemaDefinition[] | undefined;
+  oneOf?: JSONSchemaDefinition[] | undefined;
+  not?: JSONSchemaDefinition | undefined;
 
   /**
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-7
@@ -151,7 +151,7 @@ export interface JSONSchema7 {
    * @see https://tools.ietf.org/html/draft-handrews-json-schema-validation-01#section-9
    */
   definitions?: {
-    [key: string]: JSONSchema7Definition;
+    [key: string]: JSONSchemaDefinition;
   } | undefined;
 
   /**
@@ -159,8 +159,8 @@ export interface JSONSchema7 {
    */
   title?: string | undefined;
   description?: string | undefined;
-  default?: JSONSchema7Type | undefined;
+  default?: JSONSchemaType | undefined;
   readOnly?: boolean | undefined;
   writeOnly?: boolean | undefined;
-  examples?: JSONSchema7Type | undefined;
+  examples?: JSONSchemaType | undefined;
 }

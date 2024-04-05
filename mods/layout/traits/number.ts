@@ -8,11 +8,11 @@ export class NumberLayoutType extends AbstractLayoutType<number> {
 
 export const unsafeNumber = (...validators: LayoutTypeValidator<number>[]): LayoutTrait<number> => {
   return new NumberLayoutType(validators);
-}
+};
 
 export const number = (...validators: LayoutTypeValidator<number>[]): LayoutTrait<number> => {
   return new NumberLayoutType([
     new IsNumberLayoutTypeValidator(),
     ...validators,
   ]);
-}
+};

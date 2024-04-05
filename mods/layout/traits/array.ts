@@ -1,7 +1,7 @@
 import { LayoutTrait, LayoutTypeValidator, UnknownLayout } from "../defines.ts";
 import { InferLayout } from "../mod.ts";
-import { layoutSchemaGeneratorSymbol, LayoutSchemaGeneratorContext } from "../schema/defines.ts";
-import { JSONSchema } from "../schema/mod.ts";
+import { LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defines.ts";
+import { JSONSchema } from "../schema/json-schema-types.ts";
 import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "./abstract-type.ts";
 
 class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
@@ -29,4 +29,4 @@ export const array = <TLayout extends UnknownLayout, TResult = InferLayout<TLayo
   ...validators: LayoutTypeValidator<unknown[]>[]
 ): LayoutTrait<TResult[]> => {
   return new ArrayLayoutType<TResult>(itemsLayout, validators);
-}
+};

@@ -1,4 +1,9 @@
-import { LayoutTypeValidationContext, LayoutTypeValidator, layoutTypeValidatorSymbol, registerLayoutValidationError } from "../defines.ts";
+import {
+  LayoutTypeValidationContext,
+  LayoutTypeValidator,
+  layoutTypeValidatorSymbol,
+  registerLayoutValidationError,
+} from "../defines.ts";
 
 export const notAFiniteNumberErrorDef = registerLayoutValidationError(
   "not-a-finite-number",

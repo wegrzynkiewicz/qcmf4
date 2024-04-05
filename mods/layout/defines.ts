@@ -43,7 +43,7 @@ export interface LayoutTypeValidator<T> {
 export class Layout<T> {
   constructor(
     public traits: UnknownLayoutTrait[],
-  ) { }
+  ) {}
 }
 export type UnknownLayout = Layout<unknown>;
 export type UnknownLayoutArray = UnknownLayout[];
