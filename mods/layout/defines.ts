@@ -1,20 +1,17 @@
 export type LayoutValidationErrorData = Record<string, unknown>;
 
 export interface LayoutValidationErrorDefinitionInput {
-  code: string;
-  message: string;
+  kind: string;
 }
 
 export interface LayoutValidationErrorDefinition {
-  readonly code: string;
-  readonly message: string;
+  readonly kind: string;
 }
 
 export function registerLayoutValidationError(
-  code: string,
-  message: string,
+  kind: string,
 ): LayoutValidationErrorDefinition {
-  return { code, message };
+  return { kind };
 }
 
 export interface LayoutValidationErrorInstance {

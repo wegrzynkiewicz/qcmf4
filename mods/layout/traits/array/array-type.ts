@@ -1,8 +1,8 @@
-import { LayoutTrait, LayoutTypeValidator, UnknownLayout } from "../defines.ts";
-import { InferLayout } from "../mod.ts";
-import { LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defines.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
-import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "./abstract-type.ts";
+import { LayoutTrait, LayoutTypeValidator, UnknownLayout } from "../../defines.ts";
+import { InferLayout } from "../../mod.ts";
+import { LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../../schema/defines.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
+import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
 
 class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
   readonly [layoutJSONSchemaTypeSymbol] = "array";

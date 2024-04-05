@@ -1,6 +1,6 @@
-import { LayoutTrait, LayoutTypeValidator } from "../defines.ts";
-import { IsIntegerLayoutTypeValidator } from "../validators/is-integer.ts";
-import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "./abstract-type.ts";
+import { LayoutTrait, LayoutTypeValidator } from "../../defines.ts";
+import { IsIntegerLayoutTypeValidator } from "./is-integer.ts";
+import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
 
 export class IntegerLayoutType extends AbstractLayoutType<number> {
   readonly [layoutJSONSchemaTypeSymbol] = "integer";

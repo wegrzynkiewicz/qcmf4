@@ -3,25 +3,22 @@ import {
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
   registerLayoutValidationError,
-} from "../defines.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/defines.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
+} from "../../defines.ts";
+import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defines.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
 
-export const notLessThan = registerLayoutValidationError(
-  "not-less-than",
-  "Value is not less than the specified number",
-);
+export const invalidLessThanErrorDef = registerLayoutValidationError("not-less-than");
 
 export class LessThanLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
   constructor(
     private threshold: number,
-  ) {}
+  ) { }
 
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
     if (value < this.threshold) {
       return;
     }
-    context.error(notLessThan);
+    context.error(invalidLessThanErrorDef);
   }
 
   [layoutSchemaGeneratorSymbol](): JSONSchema {
@@ -33,21 +30,18 @@ export function lessThan(threshold: number): LessThanLayoutTypeValidator {
   return new LessThanLayoutTypeValidator(threshold);
 }
 
-export const notLessThanEqual = registerLayoutValidationError(
-  "not-less-than-or-equal",
-  "Value is not less than or equal to the specified number",
-);
+export const invalidLessThanEqualErrorDef = registerLayoutValidationError("invalid-less-than-or-equal");
 
 export class LessThanOrEqualLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
   constructor(
     private threshold: number,
-  ) {}
+  ) { }
 
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
     if (value <= this.threshold) {
       return;
     }
-    context.error(notLessThanEqual);
+    context.error(invalidLessThanEqualErrorDef);
   }
 
   [layoutSchemaGeneratorSymbol](): JSONSchema {

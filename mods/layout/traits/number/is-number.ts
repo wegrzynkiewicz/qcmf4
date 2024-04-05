@@ -3,17 +3,14 @@ import {
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
   registerLayoutValidationError,
-} from "../defines.ts";
+} from "../../defines.ts";
 
-export const notANumberErrorDef = registerLayoutValidationError(
-  "not-a-number",
-  "Value is not a number",
-);
+export const invalidNumberErrorDef = registerLayoutValidationError("invalid-number");
 
 export class IsNumberLayoutTypeValidator implements LayoutTypeValidator<number> {
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
     if (Number.isNaN(value) === true) {
-      context.error(notANumberErrorDef);
+      context.error(invalidNumberErrorDef);
     }
   }
 }

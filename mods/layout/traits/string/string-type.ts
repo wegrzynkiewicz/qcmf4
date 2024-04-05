@@ -1,5 +1,5 @@
-import { LayoutTrait, LayoutTypeValidator } from "../defines.ts";
-import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "./abstract-type.ts";
+import { LayoutTrait, LayoutTypeValidator } from "../../defines.ts";
+import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
 
 export class StringLayoutType extends AbstractLayoutType<string> {
   readonly [layoutJSONSchemaTypeSymbol] = "string";

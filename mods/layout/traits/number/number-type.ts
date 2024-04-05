@@ -1,6 +1,6 @@
-import { LayoutTrait, LayoutTypeValidator } from "../defines.ts";
-import { IsNumberLayoutTypeValidator } from "../validators/is-number.ts";
-import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "./abstract-type.ts";
+import { LayoutTrait, LayoutTypeValidator } from "../../defines.ts";
+import { IsNumberLayoutTypeValidator } from "./is-number.ts";
+import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
 
 export class NumberLayoutType extends AbstractLayoutType<number> {
   readonly [layoutJSONSchemaTypeSymbol] = "number";

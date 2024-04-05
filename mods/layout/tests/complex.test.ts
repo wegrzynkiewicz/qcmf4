@@ -1,14 +1,19 @@
 import { assertEquals } from "../../deps.ts";
 import { array, date, description, InferLayout, integer, layout, number, object, optional, string } from "../mod.ts";
 import { LayoutJSONSchemaCreator } from "../schema/defines.ts";
-import { greaterThan } from "../validators/greater-than.ts";
-import { lessThanOrEqual } from "../validators/less-than.ts";
+import { greaterThan } from "../traits/number/greater-than.ts";
+import { lessThanOrEqual } from "../traits/number/less-than.ts";
+import { maxLength } from "../traits/string/max-length.ts";
+import { minLength } from "../traits/string/min-length.ts";
 
 const testLayout = layout(
   object({
     name: layout(
       description("Name of the person"),
-      string(),
+      string(
+        minLength(3),
+        maxLength(20),
+      ),
     ),
     age: layout(
       description("Age of the person"),
@@ -51,13 +56,14 @@ Deno.test("validate complex example", () => {
 Deno.test("complex example json schema creation", () => {
   const creator = new LayoutJSONSchemaCreator();
   const jsonSchema = creator.create(testLayout);
-  console.log(JSON.stringify(jsonSchema, null, 2));
   assertEquals(jsonSchema, {
     type: "object",
     properties: {
       name: {
         description: "Name of the person",
         type: "string",
+        minLength: 3,
+        maxLength: 20,
       },
       age: {
         description: "Age of the person",

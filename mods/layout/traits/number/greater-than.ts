@@ -3,25 +3,22 @@ import {
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
   registerLayoutValidationError,
-} from "../defines.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/defines.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
+} from "../../defines.ts";
+import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defines.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
 
-export const notGreaterThan = registerLayoutValidationError(
-  "not-greater-than",
-  "Value is not greater than the specified number",
-);
+export const invalidGreaterThan = registerLayoutValidationError("invalid-greater-than");
 
 export class GreaterThanLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
   constructor(
     private threshold: number,
-  ) {}
+  ) { }
 
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
     if (value > this.threshold) {
       return;
     }
-    context.error(notGreaterThan);
+    context.error(invalidGreaterThan);
   }
 
   [layoutSchemaGeneratorSymbol](): JSONSchema {
@@ -33,21 +30,18 @@ export function greaterThan(threshold: number): GreaterThanLayoutTypeValidator {
   return new GreaterThanLayoutTypeValidator(threshold);
 }
 
-export const notGreaterThanEqual = registerLayoutValidationError(
-  "not-greater-than-or-equal",
-  "Value is not greater than or equal to the specified number",
-);
+export const invalidGreaterThanEqual = registerLayoutValidationError("invalid-number-greater-than-or-equal");
 
 export class GreaterThanOrEqualLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
   constructor(
     private threshold: number,
-  ) {}
+  ) { }
 
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
     if (value >= this.threshold) {
       return;
     }
-    context.error(notGreaterThanEqual);
+    context.error(invalidGreaterThanEqual);
   }
 
   [layoutSchemaGeneratorSymbol](): JSONSchema {
