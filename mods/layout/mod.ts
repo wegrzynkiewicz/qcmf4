@@ -2,8 +2,11 @@ export type { InferLayout } from "./defs.ts";
 
 export { Layout, layout } from "./defs.ts";
 
+export { defaulted } from "./traits/defaulted.ts";
 export { description } from "./traits/description.ts";
+export { title } from "./traits/title.ts";
 
+export { logical } from "./traits/boolean/logical-type.ts";
 export { array } from "./traits/array/array-type.ts";
 export { boolean } from "./traits/boolean/boolean-type.ts";
 export { date } from "./traits/date.ts";

@@ -1,4 +1,5 @@
 import { assertEquals } from "../../deps.ts";
+import { defaulted } from "../mod.ts";
 import {
   array,
   boolean,
@@ -42,6 +43,10 @@ const testLayout = layout(
     address: layout(
       object({
         city: layout(string()),
+        country: layout(
+          string(),
+          defaulted(() => "Poland"),
+        ),
         street: layout(string()),
         number: layout(number(), optional),
       }),
@@ -66,6 +71,7 @@ Deno.test("validate complex example", () => {
     isCompany: true,
     address: {
       city: "city",
+      country: "Poland",
       street: "street",
       number: 4,
     },
@@ -99,6 +105,7 @@ Deno.test("complex example json schema creation", () => {
         type: "object",
         properties: {
           city: { type: "string" },
+          country: { type: "string", default: "Poland" },
           street: { type: "string" },
           number: { type: "number" },
         },
