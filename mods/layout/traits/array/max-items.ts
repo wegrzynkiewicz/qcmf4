@@ -9,12 +9,12 @@ import { JSONSchema } from "../../schema/json-schema-types.ts";
 
 export const invalidMaxArrayItemsErrorDef = registerLayoutValidationError("invalid-max-array-items");
 
-export class MaxArrayItemsLayoutTypeValidator implements LayoutTypeValidator<string> {
+export class MaxArrayItemsLayoutTypeValidator implements LayoutTypeValidator<unknown[]> {
   constructor(
     private threshold: number,
   ) { }
 
-  [layoutTypeValidatorSymbol](value: string, context: LayoutTypeValidationContext): void {
+  [layoutTypeValidatorSymbol](value: unknown[], context: LayoutTypeValidationContext): void {
     if (value.length > this.threshold) {
       context.error(invalidMaxArrayItemsErrorDef);
     }

@@ -1,6 +1,7 @@
 import { assertEquals } from "../../deps.ts";
-import { array, date, description, InferLayout, integer, layout, number, object, optional, string } from "../mod.ts";
+import { array, date, description, InferLayout, integer, layout, maxItems, minItems, number, object, optional, string } from "../mod.ts";
 import { LayoutJSONSchemaCreator } from "../schema/defines.ts";
+import { uniqueItems } from "../traits/array/unique-items.ts";
 import { greaterThan } from "../traits/number/greater-than.ts";
 import { lessThanOrEqual } from "../traits/number/less-than.ts";
 import { maxLength } from "../traits/string/max-length.ts";
@@ -33,6 +34,9 @@ const testLayout = layout(
     hobbies: layout(
       array(
         layout(string()),
+        minItems(1),
+        maxItems(5),
+        uniqueItems(),
       ),
     ),
   }),
@@ -84,6 +88,9 @@ Deno.test("complex example json schema creation", () => {
       hobbies: {
         type: "array",
         items: { type: "string" },
+        maxItems: 5,
+        minItems: 1,
+        uniqueItems: true,
       },
     },
     required: ["name", "age", "birthDate", "address", "hobbies"],

@@ -1,4 +1,4 @@
-import { LayoutOptional, layoutOptionalSymbol, LayoutTrait, layoutTraitSymbol } from "../defines.ts";
+import { LayoutOptional, layoutOptionalSymbol, LayoutTrait, layoutTraitSymbol } from "../../defines.ts";
 
 export class OptionalLayoutType implements LayoutOptional, LayoutTrait<never> {
   readonly [layoutTraitSymbol] = 1;

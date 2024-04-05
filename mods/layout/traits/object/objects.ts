@@ -1,7 +1,7 @@
-import { InferLayoutObject, LayoutTrait, layoutTraitSymbol, UnknownLayoutMap, UnknownLayoutTrait } from "../defines.ts";
-import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext } from "../schema/defines.ts";
-import { layoutSchemaGeneratorSymbol } from "../schema/defines.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
+import { InferLayoutObject, LayoutTrait, layoutTraitSymbol, UnknownLayoutMap, UnknownLayoutTrait } from "../../defines.ts";
+import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext } from "../../schema/defines.ts";
+import { layoutSchemaGeneratorSymbol } from "../../schema/defines.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
 import { isOptionalLayoutType } from "./optional.ts";
 
 export function isRequiredField(traits: UnknownLayoutTrait[]): boolean {
