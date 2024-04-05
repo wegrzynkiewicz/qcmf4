@@ -1,11 +1,11 @@
 import {
+  defineLayoutValidationError,
   LayoutTypeValidationContext,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
-  registerLayoutValidationError,
-} from "../../defs.ts";
+} from "../../validation/defs.ts";
 
-export const invalidNumberErrorDef = registerLayoutValidationError("invalid-number");
+export const invalidNumberErrorDef = defineLayoutValidationError("invalid-number");
 
 export class IsNumberLayoutTypeValidator implements LayoutTypeValidator<number> {
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {

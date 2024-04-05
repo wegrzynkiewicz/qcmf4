@@ -1,11 +1,11 @@
 import {
+  defineLayoutValidationError,
   LayoutTypeValidationContext,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
-  registerLayoutValidationError,
-} from "../../defs.ts";
+} from "../../validation/defs.ts";
 
-export const invalidSafeIntegerNumberErrorDef = registerLayoutValidationError("invalid-safe-integer-number");
+export const invalidSafeIntegerNumberErrorDef = defineLayoutValidationError("invalid-safe-integer-number");
 
 export class IsIntegerLayoutTypeValidator implements LayoutTypeValidator<number> {
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {

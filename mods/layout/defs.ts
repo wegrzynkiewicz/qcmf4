@@ -1,46 +1,7 @@
-export type LayoutValidationErrorData = Record<string, unknown>;
-
-export interface LayoutValidationErrorDefinitionInput {
-  kind: string;
-}
-
-export interface LayoutValidationErrorDefinition {
-  readonly kind: string;
-}
-
-export function registerLayoutValidationError(
-  kind: string,
-): LayoutValidationErrorDefinition {
-  return { kind };
-}
-
-export interface LayoutValidationErrorInstance {
-  data?: LayoutValidationErrorData;
-  definition: LayoutValidationErrorDefinition;
-}
-
-export class LayoutTypeValidationContext {
-  valid = true;
-  errors: LayoutValidationErrorInstance[] = [];
-  error(
-    definition: LayoutValidationErrorDefinition,
-    data?: LayoutValidationErrorData,
-  ): void {
-    this.valid = false;
-    const error = { definition, data };
-    this.errors.push(error);
-  }
-}
-
-export const layoutTypeValidatorSymbol = Symbol("LayoutTypeValidator");
-export interface LayoutTypeValidator<T> {
-  [layoutTypeValidatorSymbol](value: T, context: LayoutTypeValidationContext): void;
-}
-
 export class Layout<T> {
   constructor(
     public traits: UnknownLayoutTrait[],
-  ) { }
+  ) {}
 }
 export type UnknownLayout = Layout<unknown>;
 export type UnknownLayoutArray = UnknownLayout[];

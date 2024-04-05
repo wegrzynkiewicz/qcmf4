@@ -1,18 +1,18 @@
+import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
 import {
+  defineLayoutValidationError,
   LayoutTypeValidationContext,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
-  registerLayoutValidationError,
-} from "../../defs.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
-import { JSONSchema } from "../../schema/json-schema-types.ts";
+} from "../../validation/defs.ts";
 
-export const invalidLessThanErrorDef = registerLayoutValidationError("not-less-than");
+export const invalidLessThanErrorDef = defineLayoutValidationError("not-less-than");
 
 export class LessThanLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
   constructor(
     private threshold: number,
-  ) { }
+  ) {}
 
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
     if (value < this.threshold) {
@@ -30,12 +30,12 @@ export function lessThan(threshold: number): LessThanLayoutTypeValidator {
   return new LessThanLayoutTypeValidator(threshold);
 }
 
-export const invalidLessThanEqualErrorDef = registerLayoutValidationError("invalid-less-than-or-equal");
+export const invalidLessThanEqualErrorDef = defineLayoutValidationError("invalid-less-than-or-equal");
 
 export class LessThanOrEqualLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
   constructor(
     private threshold: number,
-  ) { }
+  ) {}
 
   [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
     if (value <= this.threshold) {

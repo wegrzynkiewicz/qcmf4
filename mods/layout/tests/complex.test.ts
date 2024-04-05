@@ -1,5 +1,18 @@
 import { assertEquals } from "../../deps.ts";
-import { array, date, description, InferLayout, integer, layout, maxItems, minItems, number, object, optional, string } from "../mod.ts";
+import {
+  array,
+  date,
+  description,
+  InferLayout,
+  integer,
+  layout,
+  maxItems,
+  minItems,
+  number,
+  object,
+  optional,
+  string,
+} from "../mod.ts";
 import { LayoutJSONSchemaCreator } from "../schema/defs.ts";
 import { uniqueItems } from "../traits/array/unique-items.ts";
 import { greaterThan } from "../traits/number/greater-than.ts";
@@ -41,11 +54,6 @@ const testLayout = layout(
     ),
   }),
 );
-const objobject({
-  city: layout(string()),
-  street: layout(string()),
-  number: layout(number(), optional),
-})
 type TestLayoutType = InferLayout<typeof testLayout>;
 
 Deno.test("validate complex example", () => {

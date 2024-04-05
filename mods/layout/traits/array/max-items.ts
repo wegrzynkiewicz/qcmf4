@@ -1,18 +1,18 @@
+import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
 import {
+  defineLayoutValidationError,
   LayoutTypeValidationContext,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
-  registerLayoutValidationError,
-} from "../../defs.ts";
-import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
-import { JSONSchema } from "../../schema/json-schema-types.ts";
+} from "../../validation/defs.ts";
 
-export const invalidMaxArrayItemsErrorDef = registerLayoutValidationError("invalid-max-array-items");
+export const invalidMaxArrayItemsErrorDef = defineLayoutValidationError("invalid-max-array-items");
 
 export class MaxArrayItemsLayoutTypeValidator implements LayoutTypeValidator<unknown[]> {
   constructor(
     private threshold: number,
-  ) { }
+  ) {}
 
   [layoutTypeValidatorSymbol](value: unknown[], context: LayoutTypeValidationContext): void {
     if (value.length > this.threshold) {

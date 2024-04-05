@@ -1,7 +1,8 @@
-import { LayoutTrait, LayoutTypeValidator, UnknownLayout } from "../../defs.ts";
+import { LayoutTrait, UnknownLayout } from "../../defs.ts";
 import { InferLayout } from "../../mod.ts";
 import { LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
+import { LayoutTypeValidator } from "../../validation/defs.ts";
 import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
 
 class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {

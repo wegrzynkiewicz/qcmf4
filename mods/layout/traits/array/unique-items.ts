@@ -1,13 +1,13 @@
+import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
 import {
+  defineLayoutValidationError,
   LayoutTypeValidationContext,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
-  registerLayoutValidationError,
-} from "../../defs.ts";
-import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
-import { JSONSchema } from "../../schema/json-schema-types.ts";
+} from "../../validation/defs.ts";
 
-export const invalidUniqueArrayItemsErrorDef = registerLayoutValidationError("invalid-unique-array-items");
+export const invalidUniqueArrayItemsErrorDef = defineLayoutValidationError("invalid-unique-array-items");
 
 function onlyUnique<T>(value: T, index: number, array: T[]) {
   return array.indexOf(value) === index;
