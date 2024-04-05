@@ -7,7 +7,7 @@ export interface LoggerFactory {
   createLogger(channel: string, params?: LoggerData): Logger;
 }
 
-export class LoggerFactory implements LoggerFactory {
+export class BasicLoggerFactory implements LoggerFactory {
   public constructor(
     private readonly logBus: LogBus,
   ) {}
@@ -18,7 +18,7 @@ export class LoggerFactory implements LoggerFactory {
 }
 
 export function provideLoggerFactory(resolver: ServiceResolver) {
-  return new LoggerFactory(
+  return new BasicLoggerFactory(
     resolver.resolve(provideMainLogBus),
   );
 }
