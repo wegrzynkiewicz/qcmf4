@@ -1,4 +1,4 @@
-import { Log, LogFilter, LogFormatter } from "./defines.ts";
+import { Log, LogFilter, LogFormatter } from "./defs.ts";
 import { LogBusSubscriber } from "./log-bus.ts";
 
 export class BasicLogSubscriber implements LogBusSubscriber {

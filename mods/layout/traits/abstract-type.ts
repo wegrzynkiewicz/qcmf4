@@ -1,5 +1,5 @@
-import { LayoutTrait, layoutTraitSymbol, LayoutTypeValidator } from "../defines.ts";
-import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defines.ts";
+import { LayoutTrait, layoutTraitSymbol, LayoutTypeValidator } from "../defs.ts";
+import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
 import { JSONSchemaTypeName, JSONSchema } from "../schema/json-schema-types.ts";
 
 export const layoutJSONSchemaTypeSymbol = Symbol("LayoutJSONSchemaType");

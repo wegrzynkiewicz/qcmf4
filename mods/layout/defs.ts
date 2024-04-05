@@ -40,7 +40,7 @@ export interface LayoutTypeValidator<T> {
 export class Layout<T> {
   constructor(
     public traits: UnknownLayoutTrait[],
-  ) {}
+  ) { }
 }
 export type UnknownLayout = Layout<unknown>;
 export type UnknownLayoutArray = UnknownLayout[];
@@ -75,7 +75,7 @@ export type OptionalObjectProperties<T extends UnknownLayoutMap> = {
 };
 
 export type RequiredObjectProperties<T extends UnknownLayoutMap> = {
-  [K in keyof T as IsTraitInLayout<T[K], LayoutOptional> extends false ? K : never]: InferLayout<T[K]>;
+  [K in keyof T as IsTraitInLayout<T[K], LayoutOptional> extends false ? K : never]-?: InferLayout<T[K]>;
 };
 
 export type InferLayoutObject<T extends UnknownLayoutMap> = Expand<

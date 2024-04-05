@@ -3,7 +3,6 @@ import { Breaker } from "../assert/breaker.ts";
 export interface Provider<TInstance> {
   (resolver: ServiceResolver): TInstance;
 }
-
 export type UnknownProvider = Provider<unknown>;
 
 export class ServiceResolver {

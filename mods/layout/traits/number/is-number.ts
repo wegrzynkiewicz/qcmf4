@@ -3,7 +3,7 @@ import {
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
   registerLayoutValidationError,
-} from "../../defines.ts";
+} from "../../defs.ts";
 
 export const invalidNumberErrorDef = registerLayoutValidationError("invalid-number");
 

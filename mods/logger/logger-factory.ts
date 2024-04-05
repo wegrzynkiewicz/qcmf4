@@ -1,6 +1,6 @@
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { BasicLogger } from "./basic-logger.ts";
-import { Logger, LoggerData } from "./defines.ts";
+import { Logger, LoggerData } from "./defs.ts";
 import { LogBus, provideMainLogBus } from "./log-bus.ts";
 
 export interface LoggerFactory {

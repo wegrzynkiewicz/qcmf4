@@ -3,8 +3,8 @@ import {
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
   registerLayoutValidationError,
-} from "../../defines.ts";
-import { layoutSchemaGeneratorSymbol } from "../../schema/defines.ts";
+} from "../../defs.ts";
+import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 
 export const invalidMaxStringLengthErrorDef = registerLayoutValidationError("invalid-max-string-length");

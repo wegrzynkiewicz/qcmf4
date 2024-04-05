@@ -1,4 +1,4 @@
-import { LayoutTrait, layoutTraitSymbol } from "../defines.ts";
+import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
 
 export const title = (title: string): LayoutTrait<never> => {
   return {

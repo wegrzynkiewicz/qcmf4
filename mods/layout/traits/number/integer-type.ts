@@ -1,4 +1,4 @@
-import { LayoutTrait, LayoutTypeValidator } from "../../defines.ts";
+import { LayoutTrait, LayoutTypeValidator } from "../../defs.ts";
 import { IsIntegerLayoutTypeValidator } from "./is-integer.ts";
 import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
 

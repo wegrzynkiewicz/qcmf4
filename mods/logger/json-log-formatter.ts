@@ -1,4 +1,4 @@
-import { Log, LogFormatter, logSeverityNames } from "./defines.ts";
+import { Log, LogFormatter, logSeverityNames } from "./defs.ts";
 
 export class JSONLogFormatter implements LogFormatter {
   public format(log: Log): string {

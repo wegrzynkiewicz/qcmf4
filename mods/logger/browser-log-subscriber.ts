@@ -1,4 +1,4 @@
-import { Log, LogFilter, mapSeverityToConsoleMethod } from "./defines.ts";
+import { Log, LogFilter, mapSeverityToConsoleMethod } from "./defs.ts";
 import { LogBusSubscriber } from "./log-bus.ts";
 
 export class BrowserLogSubscriber implements LogBusSubscriber {

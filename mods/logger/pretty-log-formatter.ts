@@ -1,5 +1,5 @@
 import { bold, brightBlue, dim } from "../deps.ts";
-import { Log, LoggerData, logSeverityNames, mapSeverityToConsoleColor } from "./defines.ts";
+import { Log, LoggerData, logSeverityNames, mapSeverityToConsoleColor } from "./defs.ts";
 
 export function indent(data: string, delimiter: string): string {
   return data

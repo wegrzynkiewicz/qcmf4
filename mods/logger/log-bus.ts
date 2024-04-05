@@ -1,7 +1,7 @@
 import { BasicLogFilter } from "./basic-log-filter.ts";
 import { BasicLogSubscriber } from "./basic-log-subscriber.ts";
 import { BrowserLogSubscriber } from "./browser-log-subscriber.ts";
-import { Log, LogSeverity } from "./defines.ts";
+import { Log, LogSeverity } from "./defs.ts";
 import { PrettyLogFormatter } from "./pretty-log-formatter.ts";
 
 export interface LogBusSubscriber {

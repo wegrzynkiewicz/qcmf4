@@ -1,5 +1,5 @@
-import { LayoutTrait, layoutTraitSymbol } from "../defines.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/defines.ts";
+import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
+import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
 import { JSONSchema } from "../schema/json-schema-types.ts";
 
 export class DescriptionLayoutTrait implements LayoutSchemaGenerator, LayoutTrait<never> {

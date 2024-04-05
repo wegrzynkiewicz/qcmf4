@@ -1,6 +1,6 @@
-import { InferLayoutObject, LayoutTrait, layoutTraitSymbol, UnknownLayoutMap, UnknownLayoutTrait } from "../../defines.ts";
-import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext } from "../../schema/defines.ts";
-import { layoutSchemaGeneratorSymbol } from "../../schema/defines.ts";
+import { InferLayoutObject, LayoutTrait, layoutTraitSymbol, UnknownLayoutMap, UnknownLayoutTrait } from "../../defs.ts";
+import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext } from "../../schema/defs.ts";
+import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 import { isOptionalLayoutType } from "./optional.ts";
 

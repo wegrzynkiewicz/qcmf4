@@ -3,8 +3,8 @@ import {
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
   registerLayoutValidationError,
-} from "../../defines.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defines.ts";
+} from "../../defs.ts";
+import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 
 export const invalidLessThanErrorDef = registerLayoutValidationError("not-less-than");

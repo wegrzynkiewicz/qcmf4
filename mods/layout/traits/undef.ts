@@ -1,4 +1,4 @@
-import { LayoutTrait, layoutTraitSymbol } from "../defines.ts";
+import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
 
 export class UndefinedLayoutType implements LayoutTrait<undefined> {
   readonly [layoutTraitSymbol] = 1;

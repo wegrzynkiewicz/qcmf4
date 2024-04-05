@@ -1,4 +1,4 @@
-import { Logger, LoggerData, LogSeverity } from "./defines.ts";
+import { Logger, LoggerData, LogSeverity } from "./defs.ts";
 import { LogBus } from "./log-bus.ts";
 
 export class BasicLogger implements Logger {

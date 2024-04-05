@@ -1,4 +1,4 @@
-import { UnknownLayout } from "../defines.ts";
+import { UnknownLayout } from "../defs.ts";
 import { JSONSchema } from "./json-schema-types.ts";
 
 export class LayoutJSONSchemaCreator {

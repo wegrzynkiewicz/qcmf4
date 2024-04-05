@@ -1,6 +1,6 @@
-export type { InferLayout } from "./defines.ts";
+export type { InferLayout } from "./defs.ts";
 
-export { layout } from "./defines.ts";
+export { layout } from "./defs.ts";
 
 export { description } from "./traits/description.ts";
 

@@ -3,7 +3,7 @@ import {
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
   registerLayoutValidationError,
-} from "../../defines.ts";
+} from "../../defs.ts";
 
 export const invalidSafeIntegerNumberErrorDef = registerLayoutValidationError("invalid-safe-integer-number");
 

@@ -1,4 +1,4 @@
-import { Log, LogFilter, LogSeverity } from "./defines.ts";
+import { Log, LogFilter, LogSeverity } from "./defs.ts";
 
 export class BasicLogFilter implements LogFilter {
   public constructor(
