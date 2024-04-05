@@ -7,6 +7,10 @@ export class BasicLogger implements Logger {
     private readonly params: LoggerData,
   ) {}
 
+  public extend(topic: string, params?: LoggerData | undefined): Logger {
+    return new BasicLogger(this.bus, topic, { ...this.params, ...params });
+  }
+
   private log(severity: LogSeverity, message: string, data: LoggerData = {}) {
     const log: Log = {
       topic: this.topic,

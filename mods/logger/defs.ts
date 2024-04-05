@@ -48,6 +48,7 @@ export const mapSeverityToConsoleColor: Record<LogSeverity, ColorLog> = {
 } as const;
 
 export interface Logger {
+  extend(topic: string, params?: LoggerData): Logger;
   silly(message: string, data?: LoggerData): void;
   debug(message: string, data?: LoggerData): void;
   info(message: string, data?: LoggerData): void;
