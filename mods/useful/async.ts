@@ -1,7 +1,7 @@
 export function withResolvers<T>(): {
   promise: Promise<T>;
   resolve: (value: T | PromiseLike<T>) => void;
-  reject: (reason: any) => void;
+  reject: (reason: unknown) => void;
 } {
   let resolve, reject;
   const promise = new Promise<T>((res, rej) => {
@@ -11,7 +11,7 @@ export function withResolvers<T>(): {
   return { promise, resolve, reject } as unknown as {
     promise: Promise<T>;
     resolve: (value: T | PromiseLike<T>) => void;
-    reject: (reason: any) => void;
+    reject: (reason: unknown) => void;
   };
 }
 

@@ -1,7 +1,6 @@
-import { Log, LogFilter, mapSeverityToConsoleMethod } from "./defs.ts";
-import { LogBusSubscriber } from "./log-bus.ts";
+import { Log, LogFilter, LogSubscriber, mapSeverityToConsoleMethod } from "./defs.ts";
 
-export class BrowserLogSubscriber implements LogBusSubscriber {
+export class BrowserLogSubscriber implements LogSubscriber {
   public constructor(
     private readonly filter: LogFilter,
   ) {}
@@ -10,8 +9,8 @@ export class BrowserLogSubscriber implements LogBusSubscriber {
     if (this.filter.filter(log) === false) {
       return;
     }
-    const { channel, data, severity, message } = log;
+    const { data, message, severity, topic } = log;
     const method = mapSeverityToConsoleMethod[severity];
-    method.call(console, `[${channel}] ${message}`, data);
+    method.call(console, `[${topic}] ${message}`, data);
   }
 }

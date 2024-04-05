@@ -1,16 +1,15 @@
-import { Log, Logger, LoggerData, LogSeverity } from "./defs.ts";
-import { LogBus } from "./log-bus.ts";
+import { Log, LogChannel, Logger, LoggerData, LogSeverity } from "./defs.ts";
 
 export class BasicLogger implements Logger {
   public constructor(
-    private readonly channel: string,
-    private readonly logBus: LogBus,
+    private readonly bus: LogChannel,
+    private readonly topic: string,
     private readonly params: LoggerData,
   ) {}
 
   private log(severity: LogSeverity, message: string, data: LoggerData = {}) {
     const log: Log = {
-      channel: this.channel,
+      topic: this.topic,
       date: new Date(),
       severity,
       message,
@@ -19,7 +18,7 @@ export class BasicLogger implements Logger {
         ...data,
       },
     };
-    this.logBus.dispatch(log);
+    this.bus.emit(log);
   }
 
   public silly(message: string, data?: LoggerData): void {

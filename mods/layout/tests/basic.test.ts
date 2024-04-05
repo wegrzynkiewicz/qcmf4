@@ -1,4 +1,4 @@
-import { description, InferLayout, layout, number, string } from "../mod.ts";
+import { description, InferLayout, layout, string } from "../mod.ts";
 
 const testLayout = layout(
   description("test"),

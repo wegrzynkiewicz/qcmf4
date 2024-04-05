@@ -10,12 +10,12 @@ export function indent(data: string, delimiter: string): string {
 
 export class PrettyLogFormatter {
   public format(log: Log): string {
-    const { channel, data, date, severity, message } = log;
+    const { data, date, message, severity, topic } = log;
     const severityName = logSeverityNames[severity];
     const severityText = mapSeverityToConsoleColor[severity](severityName);
     const dateTime = date.toISOString();
     const params = this.formatData(data);
-    const header = `${dateTime} [${bold(severityText)}] [${bold(channel)}] ${brightBlue(bold(message))}`;
+    const header = `${dateTime} [${bold(severityText)}] [${bold(topic)}] ${brightBlue(bold(message))}`;
     return `${header}${dim(params)}`;
   }
 

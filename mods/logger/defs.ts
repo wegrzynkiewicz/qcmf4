@@ -1,4 +1,6 @@
 import { Breaker } from "../assert/breaker.ts";
+import { Subscriber } from "../dependency/channel.ts";
+import { Channel } from "../dependency/channel.ts";
 import { brightCyan, brightRed, brightYellow, dim } from "../deps.ts";
 
 export type LoggerData = Record<string, unknown>;
@@ -56,11 +58,11 @@ export interface Logger {
 }
 
 export interface Log {
-  channel: string;
   data: LoggerData;
   date: Date;
-  severity: LogSeverity;
   message: string;
+  severity: LogSeverity;
+  topic: string;
 }
 
 export interface LogFilter {
@@ -70,6 +72,10 @@ export interface LogFilter {
 export interface LogFormatter {
   format(log: Log): string;
 }
+
+export type LogChannel = Channel<[Log]>;
+
+export type LogSubscriber = Subscriber<[Log]>;
 
 export function provideLogger(): Logger {
   throw new Breaker("logger-must-be-injected");

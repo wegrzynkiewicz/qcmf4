@@ -1,7 +1,6 @@
-import { Log, LogFilter, LogFormatter } from "./defs.ts";
-import { LogBusSubscriber } from "./log-bus.ts";
+import { Log, LogFilter, LogFormatter, LogSubscriber } from "./defs.ts";
 
-export class BasicLogSubscriber implements LogBusSubscriber {
+export class BasicLogSubscriber implements LogSubscriber {
   public constructor(
     private readonly filter: LogFilter,
     private readonly formatter: LogFormatter,

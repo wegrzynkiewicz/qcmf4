@@ -1,3 +1,4 @@
+import { isObject } from "../../assert/asserts.ts";
 import { UnknownLayout } from "../defs.ts";
 import { JSONSchema } from "./json-schema-types.ts";
 
@@ -27,6 +28,6 @@ export const layoutSchemaGeneratorSymbol = Symbol("LayoutSchemaGenerator");
 export interface LayoutSchemaGenerator {
   [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): Partial<JSONSchema>;
 }
-export function isLayoutSchemaGenerator(value: any): value is LayoutSchemaGenerator {
-  return value && value[layoutSchemaGeneratorSymbol] instanceof Function;
+export function isLayoutSchemaGenerator(value: unknown): value is LayoutSchemaGenerator {
+  return isObject(value) && layoutSchemaGeneratorSymbol in value;
 }
