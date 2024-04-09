@@ -1,16 +1,15 @@
 import {
-  defineLayoutValidationError,
-  LayoutTypeValidationContext,
+  defineLayoutError,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
 } from "../../validation/defs.ts";
 
-export const invalidFiniteNumberErrorDef = defineLayoutValidationError("invalid-finite-number");
+export const invalidFiniteNumberErrorDef = defineLayoutError("invalid-finite-number");
 
 export class IsFiniteNumberValidator implements LayoutTypeValidator<number> {
-  [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
+  [layoutTypeValidatorSymbol](value: number): void {
     if (Number.isFinite(value) === false) {
-      context.error(invalidFiniteNumberErrorDef);
+      throw invalidFiniteNumberErrorDef.create();
     }
   }
 }

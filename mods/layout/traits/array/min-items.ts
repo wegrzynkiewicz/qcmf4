@@ -1,22 +1,24 @@
 import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 import {
-  defineLayoutValidationError,
-  LayoutTypeValidationContext,
+  defineLayoutError,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
 } from "../../validation/defs.ts";
 
-export const invalidMinArrayItemsErrorDef = defineLayoutValidationError("invalid-min-array-items");
+export const invalidMinArrayItemsErrorDef = defineLayoutError("invalid-min-array-items");
 
 export class MinArrayItemsLayoutTypeValidator implements LayoutTypeValidator<unknown[]> {
   constructor(
     private threshold: number,
-  ) {}
+  ) { }
 
-  [layoutTypeValidatorSymbol](value: unknown[], context: LayoutTypeValidationContext): void {
+  [layoutTypeValidatorSymbol](value: unknown[]): void {
     if (value.length < this.threshold) {
-      context.error(invalidMinArrayItemsErrorDef);
+      throw invalidMinArrayItemsErrorDef.create({
+        actual: value.length,
+        expected: this.threshold,
+      });
     }
   }
 

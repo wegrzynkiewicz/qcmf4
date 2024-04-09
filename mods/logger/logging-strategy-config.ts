@@ -8,15 +8,15 @@ export const loggingStrategyConfigEntry = defineConfigEntry({
     description("Controls log behavior in the app. Behaviors are defined and cannot be changed by other variables"),
     enumerate(
       layout(
-        constant("NONE"),
+        constant("none"),
         description("Logs are disabled and nothing is directed to stdout"),
       ),
       layout(
-        constant("CLI_DEV"),
+        constant("cli-dev"),
         description("Logs are configured for the best developer experience when debugging in the console"),
       ),
       layout(
-        constant("BROWSER_DEV"),
+        constant("browser-dev"),
         description("Logs are configured for the best developer experience when debugging in the browser dev tools"),
       ),
     ),

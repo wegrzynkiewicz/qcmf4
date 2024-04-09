@@ -1,40 +1,41 @@
+import { isObject } from "../../assert/asserts.ts";
+import { Breaker } from "../../assert/breaker.ts";
 import { Registry } from "../../dependency/registry.ts";
 
-export type LayoutValidationErrorData = Record<string, unknown>;
+export type LayoutErrorData = Record<string, unknown>;
 
-export interface LayoutValidationErrorDefinition {
-  readonly kind: string;
-}
-
-export const layoutValidationErrorRegistry = new Registry<LayoutValidationErrorDefinition>((e) => e.kind);
-
-export function defineLayoutValidationError(
-  kind: string,
-): LayoutValidationErrorDefinition {
-  const definition = { kind };
-  layoutValidationErrorRegistry.register(definition);
-  return definition;
-}
-
-export interface LayoutValidationErrorInstance {
-  data?: LayoutValidationErrorData;
-  definition: LayoutValidationErrorDefinition;
-}
-
-export class LayoutTypeValidationContext {
-  valid = true;
-  errors: LayoutValidationErrorInstance[] = [];
-  error(
-    definition: LayoutValidationErrorDefinition,
-    data?: LayoutValidationErrorData,
-  ): void {
-    this.valid = false;
-    const error = { definition, data };
-    this.errors.push(error);
+export class LayoutError extends Breaker {
+  public constructor(
+    public readonly definition: LayoutErrorDefinition,
+    additional?: LayoutErrorData,
+  ) {
+    super(definition.kind, additional);
   }
+}
+
+export class LayoutErrorDefinition {
+  public constructor(
+    readonly kind: string,
+  ) { }
+
+  public create(additional?: LayoutErrorData): LayoutError { 
+    return new LayoutError(this, additional);
+  }
+}
+
+export const layoutErrorRegistry = new Registry<LayoutErrorDefinition>((e) => e.kind);
+
+export function defineLayoutError(kind: string): LayoutErrorDefinition {
+  const definition = new LayoutErrorDefinition(kind);
+  layoutErrorRegistry.register(definition);
+  return definition;
 }
 
 export const layoutTypeValidatorSymbol = Symbol("LayoutTypeValidator");
 export interface LayoutTypeValidator<T> {
-  [layoutTypeValidatorSymbol](value: T, context: LayoutTypeValidationContext): void;
+  [layoutTypeValidatorSymbol](value: T): void;
+}
+export type UnknownLayoutTypeValidator = LayoutTypeValidator<unknown>
+export function isLayoutTypeValidator(value: unknown): value is UnknownLayoutTypeValidator {
+  return isObject(value) && layoutTypeValidatorSymbol in value;
 }

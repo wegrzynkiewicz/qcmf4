@@ -1,24 +1,26 @@
 import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 import {
-  defineLayoutValidationError,
-  LayoutTypeValidationContext,
+  defineLayoutError,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
 } from "../../validation/defs.ts";
 
-export const invalidLessThanErrorDef = defineLayoutValidationError("not-less-than");
+export const invalidLessThanErrorDef = defineLayoutError("not-less-than");
 
 export class LessThanLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
   constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
+  [layoutTypeValidatorSymbol](value: number): void {
     if (value < this.threshold) {
       return;
     }
-    context.error(invalidLessThanErrorDef);
+    throw invalidLessThanErrorDef.create({
+      actual: value,
+      expected: this.threshold,
+    });
   }
 
   [layoutSchemaGeneratorSymbol](): JSONSchema {
@@ -30,18 +32,21 @@ export function lessThan(threshold: number): LessThanLayoutTypeValidator {
   return new LessThanLayoutTypeValidator(threshold);
 }
 
-export const invalidLessThanEqualErrorDef = defineLayoutValidationError("invalid-less-than-or-equal");
+export const invalidLessThanEqualErrorDef = defineLayoutError("invalid-less-than-or-equal");
 
 export class LessThanOrEqualLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
   constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
+  [layoutTypeValidatorSymbol](value: number): void {
     if (value <= this.threshold) {
       return;
     }
-    context.error(invalidLessThanEqualErrorDef);
+    throw invalidLessThanEqualErrorDef.create({
+      actual: value,
+      expected: this.threshold,
+    });
   }
 
   [layoutSchemaGeneratorSymbol](): JSONSchema {

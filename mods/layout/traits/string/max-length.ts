@@ -1,22 +1,24 @@
 import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 import {
-  defineLayoutValidationError,
-  LayoutTypeValidationContext,
+  defineLayoutError,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
 } from "../../validation/defs.ts";
 
-export const invalidMaxStringLengthErrorDef = defineLayoutValidationError("invalid-max-string-length");
+export const invalidMaxStringLengthErrorDef = defineLayoutError("invalid-max-string-length");
 
 export class MaxStringLengthLayoutTypeValidator implements LayoutTypeValidator<string> {
   constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: string, context: LayoutTypeValidationContext): void {
+  [layoutTypeValidatorSymbol](value: string): void {
     if (value.length > this.threshold) {
-      context.error(invalidMaxStringLengthErrorDef);
+      throw invalidMaxStringLengthErrorDef.create({
+        actual: value.length,
+        expected: this.threshold,
+      });
     }
   }
 

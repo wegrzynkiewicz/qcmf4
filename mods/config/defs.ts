@@ -11,6 +11,10 @@ export type ConfigEntryDefinitionInput<TLayout extends UnknownLayout> = ConfigEn
 
 export const configEntryRegistry = new Registry<UnknownConfigEntryDefinition>((e) => e.kind);
 
+export function provideConfigEntryRegistry() {
+  return configEntryRegistry;
+}
+
 export function defineConfigEntry<TLayout extends UnknownLayout>(
   input: ConfigEntryDefinition<TLayout>
 ): ConfigEntryDefinition<TLayout> {
@@ -18,4 +22,10 @@ export function defineConfigEntry<TLayout extends UnknownLayout>(
   const entry = { kind, layout };
   configEntryRegistry.register(entry);
   return entry;
+}
+
+export const toEnvVarName = (kind: string): string => {
+  const name = kind.replaceAll('-', '_').toLocaleUpperCase();
+  const variable = `APP_${name}`;
+  return variable;
 }

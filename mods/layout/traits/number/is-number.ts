@@ -1,16 +1,15 @@
 import {
-  defineLayoutValidationError,
-  LayoutTypeValidationContext,
+  defineLayoutError,
   LayoutTypeValidator,
   layoutTypeValidatorSymbol,
 } from "../../validation/defs.ts";
 
-export const invalidNumberErrorDef = defineLayoutValidationError("invalid-number");
+export const invalidNumberErrorDef = defineLayoutError("invalid-number");
 
 export class IsNumberLayoutTypeValidator implements LayoutTypeValidator<number> {
-  [layoutTypeValidatorSymbol](value: number, context: LayoutTypeValidationContext): void {
+  [layoutTypeValidatorSymbol](value: number): void {
     if (Number.isNaN(value) === true) {
-      context.error(invalidNumberErrorDef);
+      throw invalidNumberErrorDef.create();
     }
   }
 }
