@@ -1,5 +1,5 @@
 import { assertEquals } from "../../deps.ts";
-import { defaulted } from "../mod.ts";
+import { constant, defaulted, enumerate } from "../mod.ts";
 import {
   array,
   boolean,
@@ -29,6 +29,24 @@ const testLayout = layout(
       string(
         minLength(3),
         maxLength(20),
+      ),
+    ),
+    accept: layout(
+      constant("ALWAYS"),
+    ),
+    gender: layout(
+      description("Gender of the person"),
+      enumerate(
+        layout(
+          constant("MALE"),
+        ),
+        layout(
+          constant("FEMALE"),
+        ),
+        layout(
+          description("The person does not want to provide their gender"),
+          constant("UNKNOWN"),
+        ),
       ),
     ),
     age: layout(
@@ -67,6 +85,8 @@ Deno.test("validate complex example", () => {
   const testInstance: TestLayoutType = {
     age: 4,
     name: "test",
+    accept: "ALWAYS",
+    gender: "MALE",
     birthDate: new Date(),
     isCompany: true,
     address: {
@@ -85,6 +105,24 @@ Deno.test("complex example json schema creation", () => {
   assertEquals(jsonSchema, {
     type: "object",
     properties: {
+      accept: {
+        const: "ALWAYS",
+      },
+      gender: {
+        description: "Gender of the person",
+        oneOf: [
+          {
+            const: "MALE",
+          },
+          {
+            const: "FEMALE",
+          },
+          {
+            description: "The person does not want to provide their gender",
+            const: "UNKNOWN",
+          },
+        ],
+      },
       name: {
         description: "Name of the person",
         type: "string",
@@ -119,6 +157,15 @@ Deno.test("complex example json schema creation", () => {
         uniqueItems: true,
       },
     },
-    required: ["name", "age", "isCompany", "birthDate", "address", "hobbies"],
+    required: [
+      "name",
+      "accept",
+      "gender",
+      "age",
+      "isCompany",
+      "birthDate",
+      "address",
+      "hobbies",
+    ],
   });
 });

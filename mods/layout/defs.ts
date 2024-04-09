@@ -43,6 +43,8 @@ export type InferLayoutObject<T extends UnknownLayoutMap> = Expand<
   OptionalObjectProperties<T> & RequiredObjectProperties<T>
 >;
 
+export type InferEnumerate<T extends UnknownLayoutArray> = Expand<InferLayout<InferArray<T>>>;
+
 export type InferLayoutArray<T extends UnknownLayoutArray> = Expand<InferLayout<InferArray<T>>[]>;
 
 export type InferLayoutType<T> = T extends LayoutOptional ? never : T extends LayoutTrait<infer U> ? U : never;
