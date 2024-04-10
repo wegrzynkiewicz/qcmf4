@@ -1,4 +1,4 @@
-import { Breaker } from "../assert/breaker.ts";
+import { Breaker, formatError } from "../assert/breaker.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { provideConfigEntryResolver } from "./config-entry-resolver.ts";
 import { provideConfigEntryRegistry } from "./defs.ts";
@@ -13,17 +13,18 @@ export function provideCompletionChecker(resolver: ServiceResolver): CompletionC
   const check = async () => {
     const results: unknown[] = [];
     for (const entry of entryRegistry.entries.values()) {
+      const { kind } = entry;
       try {
         const value = await entryResolver.get(entry);
         if (value === undefined) {
-          results.push(`unset (${entry.kind})`);
+          results.push({ type: 'unset', kind });
         }
       } catch (error) {
-        results.push(`error then resolving (${entry.kind}): ${error.message}`);
+        results.push({ type: `error`, kind, error: formatError(error) });
       }
-    }    
+    }
     if (results.length > 0) {
-      throw new Breaker("not-all-config-entries-was-valid", { results });
+      throw new Breaker("config-entries-invalid", { results });
     }
   }
   return { check };
