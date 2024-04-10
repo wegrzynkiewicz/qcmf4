@@ -11,15 +11,19 @@ export function provideCompletionChecker(resolver: ServiceResolver): CompletionC
   const entryRegistry = resolver.resolve(provideConfigEntryRegistry);
   const entryResolver = resolver.resolve(provideConfigEntryResolver);
   const check = async () => {
-    const unsetEntries: string[] = [];
+    const results: unknown[] = [];
     for (const entry of entryRegistry.entries.values()) {
-      const value = await entryResolver.get(entry);
-      if (value === undefined) {
-        unsetEntries.push(entry.kind);
+      try {
+        const value = await entryResolver.get(entry);
+        if (value === undefined) {
+          results.push(`unset (${entry.kind})`);
+        }
+      } catch (error) {
+        results.push(`error then resolving (${entry.kind}): ${error.message}`);
       }
-    }
-    if (unsetEntries.length > 0) {
-      throw new Breaker("not-all-config-entries-was-set", { unsetEntries });
+    }    
+    if (results.length > 0) {
+      throw new Breaker("not-all-config-entries-was-valid", { results });
     }
   }
   return { check };

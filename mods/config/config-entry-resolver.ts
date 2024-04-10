@@ -6,6 +6,7 @@ import { LayoutParser, provideLayoutParser } from "../layout/parsing/defs.ts";
 import { ConfigEntryDefinition, ConfigEntryExtractor } from "./defs.ts";
 import { provideQueryEnvConfigEntryExtractor } from "./query-env-config-extractor.ts";
 import { provideRequestEnvConfigEntryExtractor } from "./request-env-config-extractor.ts";
+import { LayoutError } from "../layout/validation/defs.ts";
 
 export class ConfigEntryResolver implements ConfigEntryExtractor {
 
@@ -24,6 +25,9 @@ export class ConfigEntryResolver implements ConfigEntryExtractor {
         const parsed = this.parser.parse(value, entry.layout);
         return parsed as InferLayout<T>;
       } catch (error) {
+        if (error instanceof LayoutError) {
+          throw error;
+        }
         throw new Breaker('error-inside-config-entry-resolve-when-parsing', { entry: entry.kind, error, value });
       }
     }
