@@ -29,3 +29,7 @@ export const toEnvVarName = (kind: string): string => {
   const variable = `APP_${name}`;
   return variable;
 }
+
+export interface ConfigEntryExtractor {
+  get: <T extends UnknownLayout>(entry: ConfigEntryDefinition<T>) => Promise<string | undefined>;
+}

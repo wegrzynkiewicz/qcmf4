@@ -10,6 +10,7 @@ export class LayoutError extends Breaker {
     additional?: LayoutErrorData,
   ) {
     super(definition.kind, additional);
+    this.name = "LayoutError";
   }
 }
 
@@ -18,7 +19,7 @@ export class LayoutErrorDefinition {
     readonly kind: string,
   ) { }
 
-  public create(additional?: LayoutErrorData): LayoutError { 
+  public create(additional?: LayoutErrorData): LayoutError {
     return new LayoutError(this, additional);
   }
 }
