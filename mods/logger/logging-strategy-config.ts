@@ -1,6 +1,5 @@
 import { defineConfigEntry } from "../config/defs.ts";
-import { layout } from "../layout/defs.ts";
-import { description, enumerate, constant } from "../layout/mod.ts";
+import { layout, description, enumerate, constant, InferLayout } from "../layout/mod.ts";
 
 export const loggingStrategyConfigEntry = defineConfigEntry({
   kind: "logging-strategy",
@@ -22,3 +21,5 @@ export const loggingStrategyConfigEntry = defineConfigEntry({
     ),
   ),
 });
+
+export type LoggingStrategy = InferLayout<typeof loggingStrategyConfigEntry['layout']>;

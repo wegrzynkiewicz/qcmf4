@@ -1,12 +1,7 @@
+import { formatError } from "../assert/breaker.ts";
+import { indent } from "../assert/breaker.ts";
 import { bold, brightBlue, dim } from "../deps.ts";
 import { Log, LoggerData, logSeverityNames, mapSeverityToConsoleColor } from "./defs.ts";
-
-export function indent(data: string, delimiter: string): string {
-  return data
-    .split("\n")
-    .map((line) => `${delimiter}${line}`)
-    .join("\n");
-}
 
 export class PrettyLogFormatter {
   public format(log: Log): string {
@@ -30,7 +25,7 @@ export class PrettyLogFormatter {
       msg += json;
     }
     if (error instanceof Error) {
-      msg += `\n${indent(error.stack ?? "", "  ")}\n`;
+      msg += `\n${indent(formatError(error), "  ")}\n`;
     }
     return msg;
   }

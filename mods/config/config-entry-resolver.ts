@@ -20,8 +20,12 @@ export class ConfigEntryResolver implements ConfigEntryExtractor {
       if (value === undefined) {
         continue;
       }
-      const parsed = this.parser.parse(value, entry.layout);
-      return parsed as InferLayout<T>;
+      try {
+        const parsed = this.parser.parse(value, entry.layout);
+        return parsed as InferLayout<T>;
+      } catch (error) {
+        throw new Breaker('error-inside-config-entry-resolve-when-parsing', { entry: entry.kind, error, value });
+      }
     }
   }
 

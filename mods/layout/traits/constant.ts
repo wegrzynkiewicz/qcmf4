@@ -9,21 +9,22 @@ export const invalidConstantErrorDef = defineLayoutError('invalid-constant');
 export class ConstantLayoutTrait<T extends string> implements LayoutSchemaGenerator, LayoutTrait<T> {
   readonly [layoutTraitSymbol] = 1;
   private readonly uppercase: string;
-  
+
   constructor(
     public constant: T,
-  ) { 
+  ) {
     this.uppercase = constant.toLocaleUpperCase();
   }
 
   [layoutTypeParserSymbol](value: unknown): string {
+    const { constant, uppercase } = this;
     if (typeof value !== "string") {
       throw invalidConstantErrorDef.create();
     }
-    if (value.toLocaleUpperCase() === this.uppercase) {
-      return this.uppercase;
+    if (value.toLocaleUpperCase() === uppercase) {
+      return uppercase;
     }
-    throw invalidConstantErrorDef.create();
+    throw invalidConstantErrorDef.create({ constant });;
   }
 
   [layoutSchemaGeneratorSymbol](): JSONSchema {

@@ -5,7 +5,7 @@ import { LayoutTrait } from "../defs.ts";
 import { LayoutTypeParser, layoutTypeParserSymbol, LayoutParserContext } from "../parsing/defs.ts";
 import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
 import { JSONSchema } from "../schema/json-schema-types.ts";
-import { defineLayoutError } from "../validation/defs.ts";
+import { LayoutError, defineLayoutError } from "../validation/defs.ts";
 
 export const invalidEnumerateErrorDef = defineLayoutError("invalid-enumerate");
 
@@ -19,16 +19,20 @@ export class EnumerateLayoutType<T extends UnknownLayoutArray>
 
   [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): T {
     const { parser } = context;
-    const fields: unknown[] = [];
+    const enumFields: unknown[] = [];
     for (const member of this.members) {
       try {
         const parsedValue = parser.parse(value, member);
         return parsedValue;
       } catch (error) {
-        fields.push(error);
+        if (error instanceof LayoutError) {
+          enumFields.push(error);
+        } else {
+          throw error;
+        }
       }
     }
-    throw invalidEnumerateErrorDef.create({ fields });
+    throw invalidEnumerateErrorDef.create({ enumFields });
   }
 
   [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {

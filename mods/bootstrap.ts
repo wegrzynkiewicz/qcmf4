@@ -1,6 +1,7 @@
 import { createGlobalContext } from "./dependency/context.ts";
 import { provideCompletionChecker } from "./config/completion-checker.ts";
 import "./logger/logging-strategy-config.ts"
+import { displayError } from "./assert/breaker.ts";
 
 async function bootstrap() {
   try {
@@ -10,7 +11,7 @@ async function bootstrap() {
     const completionChecker = resolver.resolve(provideCompletionChecker);
     await completionChecker.check();
   } catch (error) {
-    console.error(error.stack);
+    displayError(error);
   }
 }
 
