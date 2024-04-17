@@ -1,15 +1,32 @@
-import { IsIntegerLayoutTypeValidator } from "./is-integer.ts";
-import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
+import { AbstractLayoutType, layoutPrimarySchemaGeneratorSymbol } from "../abstract-type.ts";
 import { LayoutTrait } from "../../defs.ts";
-import { LayoutTypeValidator } from "../../validation/defs.ts";
+import { LayoutTypeValidator } from "../../validation.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
+import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
+import { layoutTypeParserSymbol } from "../../parsing.ts";
+import { invalidNumberTypeErrorDef } from "./number-type.ts";
+
+export const invalidIntegerErrorDef = defineLayoutError(
+  "invalid-integer",
+  "Value is not an integer.",
+);
 
 export class IntegerLayoutType extends AbstractLayoutType<number> {
-  readonly [layoutJSONSchemaTypeSymbol] = "integer";
+  public [layoutTypeParserSymbol](value: unknown): LayoutResult<number> {
+    if (typeof value !== "number") {
+      return negativeResult(invalidNumberTypeErrorDef);
+    }
+    if (Number.isInteger(value) === false) {
+      return negativeResult(invalidIntegerErrorDef);
+    }
+    return positiveResult(value);
+  }
+
+  public [layoutPrimarySchemaGeneratorSymbol](): JSONSchema {
+    return { type: "integer" };
+  }
 }
 
 export const integer = (...validators: LayoutTypeValidator<number>[]): LayoutTrait<number> => {
-  return new IntegerLayoutType([
-    new IsIntegerLayoutTypeValidator(),
-    ...validators,
-  ]);
+  return new IntegerLayoutType(validators);
 };

@@ -1,5 +1,5 @@
 export class Layout<T> {
-  constructor(
+  public constructor(
     public traits: UnknownLayoutTrait[],
   ) {}
 }

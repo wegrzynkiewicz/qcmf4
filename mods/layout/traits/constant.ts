@@ -1,33 +1,39 @@
 import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
-import { layoutTypeParserSymbol } from "../parsing/defs.ts";
+import { LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
 import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
 import { JSONSchema } from "../schema/json-schema-types.ts";
-import { defineLayoutError } from "../validation/defs.ts";
+import { defineLayoutError, positiveResult } from "../flow.ts";
+import { LayoutResult } from "../flow.ts";
+import { negativeResult } from "../flow.ts";
 
-export const invalidConstantErrorDef = defineLayoutError('invalid-constant');
+export const invalidConstantErrorDef = defineLayoutError(
+  "invalid-constant",
+  "Value does not match the constant '{{constant}}'.",
+);
 
-export class ConstantLayoutTrait<T extends string> implements LayoutSchemaGenerator, LayoutTrait<T> {
-  readonly [layoutTraitSymbol] = 1;
+export class ConstantLayoutTrait<T extends string>
+  implements LayoutSchemaGenerator, LayoutTypeParser<T>, LayoutTrait<T> {
+  public readonly [layoutTraitSymbol] = 1;
   private readonly uppercase: string;
 
-  constructor(
+  public constructor(
     public constant: T,
   ) {
     this.uppercase = constant.toLocaleUpperCase();
   }
 
-  [layoutTypeParserSymbol](value: unknown): string {
+  public [layoutTypeParserSymbol](value: unknown): LayoutResult<T> {
     const { constant, uppercase } = this;
     if (typeof value !== "string") {
-      throw invalidConstantErrorDef.create();
+      return negativeResult(invalidConstantErrorDef, { constant });
     }
     if (value.toLocaleUpperCase() === uppercase) {
-      return uppercase;
+      return positiveResult(uppercase) as LayoutResult<T>;
     }
-    throw invalidConstantErrorDef.create({ constant });;
+    return negativeResult(invalidConstantErrorDef, { constant });
   }
 
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { const: this.constant };
   }
 }

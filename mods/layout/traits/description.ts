@@ -3,12 +3,15 @@ import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/de
 import { JSONSchema } from "../schema/json-schema-types.ts";
 
 export class DescriptionLayoutTrait implements LayoutSchemaGenerator, LayoutTrait<never> {
-  readonly [layoutTraitSymbol] = 1;
-  constructor(
+  public readonly [layoutTraitSymbol] = 1;
+
+  public constructor(
     public description: string,
   ) {}
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
-    return { description: this.description };
+
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+    const { description } = this;
+    return { description };
   }
 }
 

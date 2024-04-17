@@ -1,29 +1,26 @@
 import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
-import {
-  defineLayoutError,
-  LayoutTypeValidator,
-  layoutTypeValidatorSymbol,
-} from "../../validation/defs.ts";
+import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
 
-export const invalidGreaterThan = defineLayoutError("invalid-greater-than");
+export const invalidGreaterThan = defineLayoutError(
+  "invalid-greater-than",
+  "Value is not greater than '{{expected}}'.",
+);
 
 export class GreaterThanLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
-  constructor(
+  public constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: number): void {
+  public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
     if (value > this.threshold) {
-      return;
+      return positiveResult(value);
     }
-    throw invalidGreaterThan.create({
-      actual: value,
-      expected: this.threshold,
-    });
+    return negativeResult(invalidGreaterThan, { actual: value, expected: this.threshold });
   }
 
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { exclusiveMinimum: this.threshold };
   }
 }
@@ -32,24 +29,24 @@ export function greaterThan(threshold: number): GreaterThanLayoutTypeValidator {
   return new GreaterThanLayoutTypeValidator(threshold);
 }
 
-export const invalidGreaterThanEqual = defineLayoutError("invalid-number-greater-than-or-equal");
+export const invalidGreaterThanEqual = defineLayoutError(
+  "invalid-number-greater-than-or-equal",
+  "Value is not greater than or equal to '{{expected}}'.",
+);
 
 export class GreaterThanOrEqualLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
-  constructor(
+  public constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: number): void {
+  public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
     if (value >= this.threshold) {
-      return;
+      return positiveResult(value);
     }
-    throw invalidGreaterThanEqual.create({
-      actual: value,
-      expected: this.threshold,
-    });
+    return negativeResult(invalidGreaterThanEqual, { actual: value, expected: this.threshold });
   }
 
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { minimum: this.threshold };
   }
 }

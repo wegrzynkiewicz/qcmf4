@@ -1,10 +1,33 @@
-import { IsNumberLayoutTypeValidator } from "./is-number.ts";
-import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
+import { AbstractLayoutType, layoutPrimarySchemaGeneratorSymbol } from "../abstract-type.ts";
 import { LayoutTrait } from "../../defs.ts";
-import { LayoutTypeValidator } from "../../validation/defs.ts";
+import { LayoutTypeValidator } from "../../validation.ts";
+import { JSONSchema } from "../../schema/json-schema-types.ts";
+import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
+import { layoutTypeParserSymbol } from "../../parsing.ts";
+
+export const invalidNumberErrorDef = defineLayoutError(
+  "invalid-number",
+  "Value is not a number (NaN).",
+);
+export const invalidNumberTypeErrorDef = defineLayoutError(
+  "invalid-number-type",
+  "Value is not a number type.",
+);
 
 export class NumberLayoutType extends AbstractLayoutType<number> {
-  readonly [layoutJSONSchemaTypeSymbol] = "number";
+  public [layoutTypeParserSymbol](value: unknown): LayoutResult<number> {
+    if (typeof value !== "number") {
+      return negativeResult(invalidNumberTypeErrorDef);
+    }
+    if (Number.isNaN(value)) {
+      return negativeResult(invalidNumberErrorDef);
+    }
+    return positiveResult(value);
+  }
+
+  public [layoutPrimarySchemaGeneratorSymbol](): JSONSchema {
+    return { type: "number" };
+  }
 }
 
 export const unsafeNumber = (...validators: LayoutTypeValidator<number>[]): LayoutTrait<number> => {
@@ -12,8 +35,5 @@ export const unsafeNumber = (...validators: LayoutTypeValidator<number>[]): Layo
 };
 
 export const number = (...validators: LayoutTypeValidator<number>[]): LayoutTrait<number> => {
-  return new NumberLayoutType([
-    new IsNumberLayoutTypeValidator(),
-    ...validators,
-  ]);
+  return new NumberLayoutType(validators);
 };

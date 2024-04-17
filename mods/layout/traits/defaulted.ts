@@ -3,12 +3,14 @@ import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/de
 import { JSONSchema, JSONSchemaType } from "../schema/json-schema-types.ts";
 
 export class DefaultLayoutTrait<T extends JSONSchemaType> implements LayoutSchemaGenerator, LayoutTrait<T> {
-  readonly [layoutTraitSymbol] = 1;
-  readonly [layoutOptionalSymbol] = 1;
-  constructor(
+  public readonly [layoutTraitSymbol] = 1;
+  public readonly [layoutOptionalSymbol] = 1;
+
+  public constructor(
     public factory: () => T,
   ) {}
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { ["default"]: this.factory() };
   }
 }

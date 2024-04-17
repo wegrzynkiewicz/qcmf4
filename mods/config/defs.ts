@@ -3,7 +3,7 @@ import { UnknownLayout } from "../layout/mod.ts";
 
 export interface ConfigEntryDefinition<TLayout extends UnknownLayout> {
   kind: string;
-  layout: TLayout,
+  layout: TLayout;
 }
 export type UnknownConfigEntryDefinition = ConfigEntryDefinition<UnknownLayout>;
 
@@ -16,7 +16,7 @@ export function provideConfigEntryRegistry() {
 }
 
 export function defineConfigEntry<TLayout extends UnknownLayout>(
-  input: ConfigEntryDefinition<TLayout>
+  input: ConfigEntryDefinition<TLayout>,
 ): ConfigEntryDefinition<TLayout> {
   const { kind, layout } = input;
   const entry = { kind, layout };
@@ -25,11 +25,11 @@ export function defineConfigEntry<TLayout extends UnknownLayout>(
 }
 
 export const toEnvVarName = (kind: string): string => {
-  const name = kind.replaceAll('-', '_').toLocaleUpperCase();
+  const name = kind.replaceAll("-", "_").toLocaleUpperCase();
   const variable = `APP_${name}`;
   return variable;
-}
+};
 
 export interface ConfigEntryExtractor {
-  get: <T extends UnknownLayout>(entry: ConfigEntryDefinition<T>) => Promise<string | undefined>;
+  get: <T extends UnknownLayout>(entry: ConfigEntryDefinition<T>) => string | undefined;
 }

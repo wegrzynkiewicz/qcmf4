@@ -1,28 +1,27 @@
-import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
-import {
-  defineLayoutError,
-  LayoutTypeValidator,
-  layoutTypeValidatorSymbol,
-} from "../../validation/defs.ts";
+import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
+import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 
-export const invalidMaxStringLengthErrorDef = defineLayoutError("invalid-max-string-length");
+export const invalidMaxStringLengthErrorDef = defineLayoutError(
+  "invalid-max-string-length",
+  "Value exceeds maximum length limit. Expected '{{threshold}}' or less.",
+);
 
-export class MaxStringLengthLayoutTypeValidator implements LayoutTypeValidator<string> {
-  constructor(
+export class MaxStringLengthLayoutTypeValidator implements LayoutSchemaGenerator, LayoutTypeValidator<string> {
+  public constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: string): void {
-    if (value.length > this.threshold) {
-      throw invalidMaxStringLengthErrorDef.create({
-        actual: value.length,
-        expected: this.threshold,
-      });
+  public [layoutTypeValidatorSymbol](value: string): LayoutResult<string> {
+    const { threshold } = this;
+    if (value.length > threshold) {
+      return negativeResult(invalidMaxStringLengthErrorDef, { value, threshold });
     }
+    return positiveResult(value);
   }
 
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { maxLength: this.threshold };
   }
 }

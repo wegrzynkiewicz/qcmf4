@@ -5,47 +5,25 @@ import { brightCyan, brightRed, brightYellow, dim } from "../deps.ts";
 
 export type LoggerData = Record<string, unknown>;
 
-export const enum LogSeverity {
-  SILLY = 1,
-  DEBUG = 2,
-  INFO = 3,
-  NOTICE = 4,
-  WARN = 5,
-  ERROR = 6,
-  FATAL = 7,
-}
-
-export const logSeverityNames: Record<LogSeverity, string> = {
-  [LogSeverity.SILLY]: "SILLY",
-  [LogSeverity.DEBUG]: "DEBUG",
-  [LogSeverity.INFO]: "INFO",
-  [LogSeverity.NOTICE]: "NOTICE",
-  [LogSeverity.WARN]: "WARN",
-  [LogSeverity.ERROR]: "ERROR",
-  [LogSeverity.FATAL]: "FATAL",
-} as const;
-
-export const mapSeverityToConsoleMethod: Record<LogSeverity, (...args: unknown[]) => void> = {
-  [LogSeverity.SILLY]: console.debug,
-  [LogSeverity.DEBUG]: console.debug,
-  [LogSeverity.INFO]: console.info,
-  [LogSeverity.NOTICE]: console.info,
-  [LogSeverity.WARN]: console.warn,
-  [LogSeverity.ERROR]: console.error,
-  [LogSeverity.FATAL]: console.error,
-} as const;
-
 export type ColorLog = (message: string) => string;
 
-export const mapSeverityToConsoleColor: Record<LogSeverity, ColorLog> = {
-  [LogSeverity.SILLY]: dim,
-  [LogSeverity.DEBUG]: dim,
-  [LogSeverity.INFO]: brightCyan,
-  [LogSeverity.NOTICE]: brightCyan,
-  [LogSeverity.WARN]: brightYellow,
-  [LogSeverity.ERROR]: brightRed,
-  [LogSeverity.FATAL]: brightRed,
-} as const;
+export interface LogSeverity {
+  colorize: ColorLog;
+  display: (...args: unknown[]) => void;
+  level: number;
+  name: string;
+}
+
+export const SILLY: LogSeverity = { name: "SILLY", level: 1, display: console.debug, colorize: dim };
+export const DEBUG: LogSeverity = { name: "DEBUG", level: 2, display: console.debug, colorize: dim };
+export const INFO: LogSeverity = { name: "INFO", level: 3, display: console.info, colorize: brightCyan };
+export const NOTICE: LogSeverity = { name: "NOTICE", level: 4, display: console.info, colorize: brightCyan };
+export const WARN: LogSeverity = { name: "WARN", level: 5, display: console.warn, colorize: brightYellow };
+export const ERROR: LogSeverity = { name: "ERROR", level: 6, display: console.error, colorize: brightRed };
+export const FATAL: LogSeverity = { name: "FATAL", level: 7, display: console.error, colorize: brightRed };
+
+export const severities: LogSeverity[] = [SILLY, DEBUG, INFO, NOTICE, WARN, ERROR, FATAL];
+export const severityMap = new Map<string, LogSeverity>(severities.map((s) => [s.name, s]));
 
 export interface Logger {
   extend(topic: string, params?: LoggerData): Logger;

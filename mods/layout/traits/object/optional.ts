@@ -2,8 +2,8 @@ import { isObject } from "../../../assert/asserts.ts";
 import { LayoutOptional, layoutOptionalSymbol, LayoutTrait, layoutTraitSymbol } from "../../defs.ts";
 
 export class OptionalLayoutType implements LayoutOptional, LayoutTrait<never> {
-  readonly [layoutTraitSymbol] = 1;
-  readonly [layoutOptionalSymbol] = 1;
+  public readonly [layoutTraitSymbol] = 1;
+  public readonly [layoutOptionalSymbol] = 1;
 }
 
 export const optional: LayoutOptional = new OptionalLayoutType();

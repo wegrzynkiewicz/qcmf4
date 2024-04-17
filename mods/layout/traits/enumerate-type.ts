@@ -1,41 +1,47 @@
+import { Breaker } from "../../assert/breaker.ts";
 import { UnknownLayoutArray } from "../defs.ts";
 import { layoutTraitSymbol } from "../defs.ts";
 import { InferEnumerate } from "../defs.ts";
 import { LayoutTrait } from "../defs.ts";
-import { LayoutTypeParser, layoutTypeParserSymbol, LayoutParserContext } from "../parsing/defs.ts";
+import { NegativeLayoutResult } from "../flow.ts";
+import { isValidResult } from "../flow.ts";
+import { negativeResult } from "../flow.ts";
+import { defineLayoutError, LayoutResult } from "../flow.ts";
+import { LayoutParserContext, LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
 import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
 import { JSONSchema } from "../schema/json-schema-types.ts";
-import { LayoutError, defineLayoutError } from "../validation/defs.ts";
 
-export const invalidEnumerateErrorDef = defineLayoutError("invalid-enumerate");
+export const invalidEnumerateErrorDef = defineLayoutError(
+  "invalid-enumerate",
+  "Value does not match any of the enumerated options:",
+);
 
 export class EnumerateLayoutType<T extends UnknownLayoutArray>
   implements LayoutSchemaGenerator, LayoutTypeParser<T>, LayoutTrait<T> {
-  readonly [layoutTraitSymbol] = 1;
+  public readonly [layoutTraitSymbol] = 1;
 
   public constructor(
     public readonly members: T,
-  ) { }
+  ) {}
 
-  [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): T {
+  public [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): LayoutResult<T> {
     const { parser } = context;
-    const enumFields: unknown[] = [];
+    const tries: NegativeLayoutResult[] = [];
     for (const member of this.members) {
       try {
-        const parsedValue = parser.parse(value, member);
-        return parsedValue;
-      } catch (error) {
-        if (error instanceof LayoutError) {
-          enumFields.push(error);
-        } else {
-          throw error;
+        const result = parser.parse(value, member);
+        if (isValidResult(result) === true) {
+          return result;
         }
+        tries.push(result);
+      } catch (error) {
+        throw new Breaker("error-inside-enumerate-layout-parsing", { error, member });
       }
     }
-    throw invalidEnumerateErrorDef.create({ enumFields });
+    return negativeResult(invalidEnumerateErrorDef, { tries });
   }
 
-  [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
     const { schemaCreator } = context;
     const oneOf = this.members.map((layout) => {
       const schema = schemaCreator.create(layout);

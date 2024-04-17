@@ -1,8 +1,11 @@
 import { LayoutTrait, layoutTraitSymbol } from "../../defs.ts";
-import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
+import { layoutTypeParserSymbol } from "../../parsing.ts";
+import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
+import { invalidBooleanErrorDef } from "./boolean-type.ts";
 
-const values = new Map<string | number | boolean | null, boolean>([
+const map = new Map<string | number | boolean | null, boolean>([
   [true, true],
   [false, false],
   ["true", true],
@@ -33,11 +36,26 @@ const values = new Map<string | number | boolean | null, boolean>([
   ["", false],
 ]);
 
-const keys = [...values.keys()];
+const keys = [...map.keys()];
 
-export class LogicalLayoutType implements LayoutTrait<boolean> {
-  readonly [layoutTraitSymbol] = 1;
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+export const invalidLogicalErrorDef = defineLayoutError(
+  "invalid-logical",
+  "Value does not meet any of boolean criteria.",
+);
+
+export class LogicalLayoutType implements LayoutSchemaGenerator, LayoutTrait<boolean> {
+  public readonly [layoutTraitSymbol] = 1;
+
+  public [layoutTypeParserSymbol](value: unknown): LayoutResult<boolean> {
+    for (const [possibleValue, booleanValue] of map.entries()) {
+      if (possibleValue === value) {
+        return positiveResult(booleanValue);
+      }
+    }
+    return negativeResult(invalidBooleanErrorDef);
+  }
+
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return {
       enum: keys,
     };

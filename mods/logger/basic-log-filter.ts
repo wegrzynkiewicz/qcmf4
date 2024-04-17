@@ -6,7 +6,7 @@ export class BasicLogFilter implements LogFilter {
   ) {}
 
   public filter(log: Log): boolean {
-    if (log.severity < this.minSeverity) {
+    if (log.severity.level < this.minSeverity.level) {
       return false;
     }
     return true;

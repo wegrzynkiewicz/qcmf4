@@ -1,27 +1,29 @@
-import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
-import {
-  defineLayoutError,
-  LayoutTypeValidator,
-  layoutTypeValidatorSymbol,
-} from "../../validation/defs.ts";
+import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { defineLayoutError, LayoutResult } from "../../flow.ts";
+import { positiveResult } from "../../flow.ts";
+import { negativeResult } from "../../flow.ts";
 
-export const invalidUniqueArrayItemsErrorDef = defineLayoutError("invalid-unique-array-items");
+export const invalidUniqueArrayItemsErrorDef = defineLayoutError(
+  "invalid-unique-array-items",
+  "Array contains duplicate items.",
+);
 
 function onlyUnique<T>(value: T, index: number, array: T[]) {
   return array.indexOf(value) === index;
 }
 
 export class UniqueArrayItemsLayoutTypeValidator implements LayoutTypeValidator<unknown[]> {
-  [layoutTypeValidatorSymbol](value: unknown[]): void {
+  public [layoutTypeValidatorSymbol](value: unknown[]): LayoutResult<unknown[]> {
     const unique = value.filter(onlyUnique);
     if (value.length == unique.length) {
-      return;
+      return positiveResult(value);
     }
-    throw invalidUniqueArrayItemsErrorDef.create();
+    return negativeResult(invalidUniqueArrayItemsErrorDef);
   }
 
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { uniqueItems: true };
   }
 }

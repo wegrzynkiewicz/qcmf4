@@ -1,28 +1,29 @@
-import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
-import {
-  defineLayoutError,
-  LayoutTypeValidator,
-  layoutTypeValidatorSymbol,
-} from "../../validation/defs.ts";
+import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { defineLayoutError, LayoutResult } from "../../flow.ts";
+import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { negativeResult } from "../../flow.ts";
+import { positiveResult } from "../../flow.ts";
 
-export const invalidMinStringLengthErrorDef = defineLayoutError("invalid-min-string-length");
+export const invalidMinStringLengthErrorDef = defineLayoutError(
+  "invalid-min-string-length",
+  "Value does not meet minimum length limit. Expected '{{threshold}}' or more.",
+);
 
-export class MinStringLengthLayoutTypeValidator implements LayoutTypeValidator<string> {
-  constructor(
+export class MinStringLengthLayoutTypeValidator implements LayoutSchemaGenerator, LayoutTypeValidator<string> {
+  public constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: string): void {
-    if (value.length < this.threshold) {
-      throw invalidMinStringLengthErrorDef.create({
-        actual: value.length,
-        expected: this.threshold,
-      });
+  public [layoutTypeValidatorSymbol](value: string): LayoutResult<string> {
+    const { threshold } = this;
+    if (value.length < threshold) {
+      return negativeResult(invalidMinStringLengthErrorDef, { value, threshold });
     }
+    return positiveResult(value);
   }
 
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { minLength: this.threshold };
   }
 }

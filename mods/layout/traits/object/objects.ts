@@ -1,6 +1,5 @@
 import { InferLayoutObject, LayoutTrait, layoutTraitSymbol, UnknownLayoutMap, UnknownLayoutTrait } from "../../defs.ts";
-import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext } from "../../schema/defs.ts";
-import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 import { isOptionalLayoutType } from "./optional.ts";
 
@@ -15,12 +14,12 @@ export function isRequiredField(traits: UnknownLayoutTrait[]): boolean {
 
 export class LayoutObjectTrait<T extends UnknownLayoutMap>
   implements LayoutSchemaGenerator, LayoutTrait<InferLayoutObject<T>> {
-  readonly [layoutTraitSymbol] = 1;
-  constructor(
+  public readonly [layoutTraitSymbol] = 1;
+  public constructor(
     public fields: T,
   ) {}
 
-  [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
     const { schemaCreator } = context;
     const required: string[] = [];
     const properties = Object.entries(this.fields).map(([fieldName, layout]) => {

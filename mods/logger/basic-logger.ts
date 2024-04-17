@@ -1,4 +1,17 @@
-import { Log, LogChannel, Logger, LoggerData, LogSeverity } from "./defs.ts";
+import {
+  DEBUG,
+  ERROR,
+  FATAL,
+  INFO,
+  Log,
+  LogChannel,
+  Logger,
+  LoggerData,
+  LogSeverity,
+  NOTICE,
+  SILLY,
+  WARN,
+} from "./defs.ts";
 
 export class BasicLogger implements Logger {
   public constructor(
@@ -26,30 +39,30 @@ export class BasicLogger implements Logger {
   }
 
   public silly(message: string, data?: LoggerData): void {
-    this.log(LogSeverity.SILLY, message, data);
+    this.log(SILLY, message, data);
   }
 
   public debug(message: string, data?: LoggerData): void {
-    this.log(LogSeverity.DEBUG, message, data);
+    this.log(DEBUG, message, data);
   }
 
   public info(message: string, data?: LoggerData): void {
-    this.log(LogSeverity.INFO, message, data);
+    this.log(INFO, message, data);
   }
 
   public notice(message: string, data?: LoggerData): void {
-    this.log(LogSeverity.NOTICE, message, data);
+    this.log(NOTICE, message, data);
   }
 
   public warn(message: string, data?: LoggerData): void {
-    this.log(LogSeverity.WARN, message, data);
+    this.log(WARN, message, data);
   }
 
   public error(message: string, data?: LoggerData): void {
-    this.log(LogSeverity.ERROR, message, data);
+    this.log(ERROR, message, data);
   }
 
   public fatal(message: string, data?: LoggerData): void {
-    this.log(LogSeverity.FATAL, message, data);
+    this.log(FATAL, message, data);
   }
 }

@@ -1,25 +1,68 @@
 import { LayoutTrait, UnknownLayout } from "../../defs.ts";
+import { isNegativeResult } from "../../flow.ts";
+import { NegativeLayoutResult, negativeResult } from "../../flow.ts";
+import { defineLayoutError, LayoutResult } from "../../flow.ts";
 import { InferLayout } from "../../mod.ts";
-import { LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { LayoutParserContext, layoutTypeParserSymbol } from "../../parsing.ts";
+import { LayoutSchemaGeneratorContext } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { LayoutTypeValidator } from "../../validation/defs.ts";
-import { AbstractLayoutType, layoutJSONSchemaTypeSymbol } from "../abstract-type.ts";
+import { LayoutTypeValidator } from "../../validation.ts";
+import { AbstractLayoutType, layoutPrimarySchemaGeneratorSymbol } from "../abstract-type.ts";
+
+export const invalidArrayErrorDef = defineLayoutError(
+  "invalid-array",
+  "Value is not a valid array.",
+);
+
+export const invalidArrayItemErrorDef = defineLayoutError(
+  "invalid-array-item",
+  "Some elements in the array are invalid:",
+);
+
+export const invalidArrayItemIndexErrorDef = defineLayoutError(
+  "invalid-array-item-index",
+  "Element at index [{{index}}] is invalid:",
+);
 
 class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
-  readonly [layoutJSONSchemaTypeSymbol] = "array";
-  constructor(
+  public constructor(
     public itemsLayout: UnknownLayout,
-    validators: LayoutTypeValidator<unknown[]>[],
+    validators: LayoutTypeValidator<T[]>[],
   ) {
     super(validators);
   }
 
-  [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
+  public [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): LayoutResult<T[]> {
+    if (Array.isArray(value) === false) {
+      return negativeResult(invalidArrayErrorDef);
+    }
+    const { parser } = context;
+    const list: T[] = [];
+    const tries: NegativeLayoutResult[] = [];
+    for (const [index, item] of value.entries()) {
+      const result = parser.parse(item, this.itemsLayout);
+      if (isNegativeResult(result)) {
+        const indexResult = negativeResult(invalidArrayItemIndexErrorDef, { index, result });
+        tries.push(indexResult);
+        continue;
+      }
+      list[index] = result.value;
+    }
+    const count = tries.length;
+    if (count === 0) {
+      return this.validate(list);
+    }
+    if (count === 1) {
+      return tries[0];
+    }
+    return negativeResult(invalidArrayItemErrorDef, { tries });
+  }
+
+  public [layoutPrimarySchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
     const { schemaCreator } = context;
-    const inheritSchema = super[layoutSchemaGeneratorSymbol](context);
     const targetSchema: JSONSchema = {
-      ...inheritSchema,
       items: schemaCreator.create(this.itemsLayout),
+      type: "array",
     };
     return targetSchema;
   }
@@ -27,7 +70,7 @@ class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
 
 export const array = <TLayout extends UnknownLayout, TResult = InferLayout<TLayout>>(
   itemsLayout: TLayout,
-  ...validators: LayoutTypeValidator<unknown[]>[]
+  ...validators: LayoutTypeValidator<TResult[]>[]
 ): LayoutTrait<TResult[]> => {
   return new ArrayLayoutType<TResult>(itemsLayout, validators);
 };

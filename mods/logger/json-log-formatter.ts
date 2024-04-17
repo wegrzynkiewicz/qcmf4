@@ -1,18 +1,17 @@
-import { Log, LogFormatter, logSeverityNames } from "./defs.ts";
+import { formatError } from "../assert/breaker.ts";
+import { Log, LogFormatter } from "./defs.ts";
 
 export class JSONLogFormatter implements LogFormatter {
   public format(log: Log): string {
     const { data, date, message, severity, topic } = log;
-    const { error, ...others } = data ?? {};
-    const errorStack = error instanceof Error ? error.stack : error;
     const json = JSON.stringify({
       data: {
-        ...others,
-        error: errorStack,
+        ...data,
+        error: data.error ? formatError(data.error) : undefined,
       },
       date,
       message,
-      severity: logSeverityNames[severity],
+      severity: severity.name,
       topic,
     });
     return json;

@@ -3,12 +3,15 @@ import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/de
 import { JSONSchema } from "../schema/json-schema-types.ts";
 
 export class TitleLayoutTrait implements LayoutSchemaGenerator, LayoutTrait<never> {
-  readonly [layoutTraitSymbol] = 1;
-  constructor(
+  public readonly [layoutTraitSymbol] = 1;
+
+  public constructor(
     public title: string,
   ) {}
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
-    return { title: this.title };
+
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+    const { title } = this;
+    return { title };
   }
 }
 

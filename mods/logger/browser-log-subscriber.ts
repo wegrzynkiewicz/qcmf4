@@ -1,4 +1,4 @@
-import { Log, LogFilter, LogSubscriber, mapSeverityToConsoleMethod } from "./defs.ts";
+import { Log, LogFilter, LogSubscriber } from "./defs.ts";
 
 export class BrowserLogSubscriber implements LogSubscriber {
   public constructor(
@@ -10,7 +10,6 @@ export class BrowserLogSubscriber implements LogSubscriber {
       return;
     }
     const { data, message, severity, topic } = log;
-    const method = mapSeverityToConsoleMethod[severity];
-    method.call(console, `[${topic}] ${message}`, data);
+    severity.display.call(console, `[${topic}] ${message}`, data);
   }
 }

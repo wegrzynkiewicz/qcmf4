@@ -1,29 +1,26 @@
 import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
-import {
-  defineLayoutError,
-  LayoutTypeValidator,
-  layoutTypeValidatorSymbol,
-} from "../../validation/defs.ts";
+import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
 
-export const invalidLessThanErrorDef = defineLayoutError("not-less-than");
+export const invalidLessThanErrorDef = defineLayoutError(
+  "invalid-less-than",
+  "Value is not less than '{{expected}}'.",
+);
 
 export class LessThanLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
-  constructor(
+  public constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: number): void {
+  public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
     if (value < this.threshold) {
-      return;
+      return positiveResult(value);
     }
-    throw invalidLessThanErrorDef.create({
-      actual: value,
-      expected: this.threshold,
-    });
+    return negativeResult(invalidLessThanErrorDef, { actual: value, expected: this.threshold });
   }
 
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { maximum: this.threshold };
   }
 }
@@ -32,24 +29,24 @@ export function lessThan(threshold: number): LessThanLayoutTypeValidator {
   return new LessThanLayoutTypeValidator(threshold);
 }
 
-export const invalidLessThanEqualErrorDef = defineLayoutError("invalid-less-than-or-equal");
+export const invalidLessThanEqualErrorDef = defineLayoutError(
+  "invalid-less-than-or-equal",
+  "Value is not less than or equal to '{{expected}}'.",
+);
 
 export class LessThanOrEqualLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
-  constructor(
+  public constructor(
     private threshold: number,
   ) {}
 
-  [layoutTypeValidatorSymbol](value: number): void {
+  public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
     if (value <= this.threshold) {
-      return;
+      return positiveResult(value);
     }
-    throw invalidLessThanEqualErrorDef.create({
-      actual: value,
-      expected: this.threshold,
-    });
+    return negativeResult(invalidLessThanEqualErrorDef, { actual: value, expected: this.threshold });
   }
 
-  [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public [layoutSchemaGeneratorSymbol](): JSONSchema {
     return { exclusiveMaximum: this.threshold };
   }
 }
