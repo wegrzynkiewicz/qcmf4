@@ -16,7 +16,7 @@ export class PrettyLogFormatter {
 
   private formatData(data: LoggerData): string {
     if (Object.keys(data).length === 0) {
-      return `\n`;
+      return ``;
     }
     const { error, ...others } = data;
     let msg = ` `;
@@ -24,7 +24,7 @@ export class PrettyLogFormatter {
       const json = JSON.stringify(others);
       msg += json;
     }
-    if (error instanceof Error) {
+    if (error) {
       msg += `\n${indent(formatError(error), "  ")}\n`;
     }
     return msg;

@@ -28,7 +28,7 @@ export class ConstantLayoutTrait<T extends string>
       return new SingleNegativeLayoutResult(invalidConstantErrorDef, { constant });
     }
     if (value.toLocaleUpperCase() === uppercase) {
-      return new PositiveLayoutResult(uppercase) as LayoutResult<T>;
+      return new PositiveLayoutResult(constant) as LayoutResult<T>;
     }
     return new SingleNegativeLayoutResult(invalidConstantErrorDef, { constant });
   }
