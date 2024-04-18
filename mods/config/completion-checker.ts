@@ -13,11 +13,10 @@ export function provideCompletionChecker(resolver: ServiceResolver): CompletionC
   const check = () => {
     const results: unknown[] = [];
     for (const entry of entryRegistry.entries.values()) {
-      const { kind } = entry;
       try {
         entryResolver.resolve(entry);
       } catch (error) {
-        results.push({ kind, error });
+        results.push({ configEntryName: entry.kind, error });
       }
     }
     if (results.length > 0) {

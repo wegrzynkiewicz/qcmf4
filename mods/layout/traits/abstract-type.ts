@@ -1,11 +1,11 @@
 import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
 import {
   defineLayoutError,
-  isNegativeResult,
+  GroupingNegativeLayoutResult,
   LayoutResult,
   NegativeLayoutResult,
-  negativeResult,
-  positiveResult,
+  PositiveLayoutResult,
+  SingleNegativeLayoutResult,
 } from "../flow.ts";
 import { LayoutParserContext, LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
 import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
@@ -16,7 +16,7 @@ export const layoutPrimarySchemaGeneratorSymbol = Symbol("LayoutGenerateSchemaTy
 
 export const invalidValidationErrorDef = defineLayoutError(
   "invalid-validation",
-  "The value does not conform to the following constraints:",
+  "Value does not conform to the following constraints",
 );
 
 export abstract class AbstractLayoutType<T> implements LayoutSchemaGenerator, LayoutTypeParser<T>, LayoutTrait<T> {
@@ -33,18 +33,18 @@ export abstract class AbstractLayoutType<T> implements LayoutSchemaGenerator, La
     const tries: NegativeLayoutResult[] = [];
     for (const validator of this.validators) {
       const result = validator[layoutTypeValidatorSymbol](value);
-      if (isNegativeResult(result)) {
+      if (SingleNegativeLayoutResult.is(result)) {
         tries.push(result);
       }
     }
     const count = tries.length;
     if (count === 0) {
-      return positiveResult(value);
+      return new PositiveLayoutResult(value);
     }
     if (count === 1) {
       return tries[0];
     }
-    return negativeResult(invalidValidationErrorDef, { tries });
+    return new GroupingNegativeLayoutResult(invalidValidationErrorDef, tries);
   }
 
   public [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {

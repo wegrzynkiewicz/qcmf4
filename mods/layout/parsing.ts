@@ -1,7 +1,12 @@
 import { Breaker } from "../assert/breaker.ts";
 import { isObject } from "../assert/asserts.ts";
 import { InferLayout, UnknownLayout } from "./defs.ts";
-import { isValidResult, LayoutResult, negativeResult } from "./flow.ts";
+import {
+  GroupingNegativeLayoutResult,
+  LayoutResult,
+  PositiveLayoutResult,
+  SingleNegativeLayoutResult,
+} from "./flow.ts";
 import { defineLayoutError } from "./flow.ts";
 import { NegativeLayoutResult } from "./flow.ts";
 
@@ -25,7 +30,7 @@ export const parserEmptyErrorDef = defineLayoutError(
 
 export const parserRejectedAllErrorDef = defineLayoutError(
   "parser-rejected-all",
-  "None of the following validations have been accepted:",
+  "None of the following validations have been accepted",
 );
 
 export class LayoutParser {
@@ -38,7 +43,7 @@ export class LayoutParser {
       }
       try {
         const result = trait[layoutTypeParserSymbol](value, context);
-        if (isValidResult(result) === true) {
+        if (PositiveLayoutResult.is(result) === true) {
           return result as LayoutResult<InferLayout<T>>;
         }
         tries.push(result);
@@ -48,12 +53,12 @@ export class LayoutParser {
     }
     const count = tries.length;
     if (count === 0) {
-      return negativeResult(parserEmptyErrorDef);
+      return new SingleNegativeLayoutResult(parserEmptyErrorDef);
     }
     if (count === 1) {
       return tries[0];
     }
-    return negativeResult(parserRejectedAllErrorDef, { tries });
+    return new GroupingNegativeLayoutResult(parserRejectedAllErrorDef, tries);
   }
 }
 

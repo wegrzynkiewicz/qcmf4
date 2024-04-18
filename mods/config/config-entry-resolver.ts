@@ -5,7 +5,8 @@ import { UnknownLayout } from "../layout/mod.ts";
 import { LayoutParser, provideLayoutParser } from "../layout/parsing.ts";
 import { ConfigEntryDefinition, ConfigEntryExtractor } from "./defs.ts";
 import { provideDenoEnvConfigEntryExtractor } from "./deno-env-config-extractor.ts";
-import { formatNegativeLayoutResult, isValidResult } from "../layout/flow.ts";
+import { formatNegativeLayoutResult } from "../layout/flow.ts";
+import { PositiveLayoutResult } from "../layout/flow.ts";
 
 export class ConfigEntryResolver {
   public constructor(
@@ -25,7 +26,7 @@ export class ConfigEntryResolver {
       } catch (error) {
         throw new Breaker("error-inside-config-entry-resolve-when-parsing", { entry, error, value });
       }
-      if (isValidResult(result) === true) {
+      if (PositiveLayoutResult.is(result) === true) {
         return result.value;
       }
       const message = formatNegativeLayoutResult(result);

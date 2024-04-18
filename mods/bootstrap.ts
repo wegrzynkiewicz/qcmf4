@@ -1,6 +1,7 @@
 import { createGlobalContext } from "./dependency/context.ts";
 import { provideCompletionChecker } from "./config/completion-checker.ts";
 import { displayError } from "./assert/breaker.ts";
+import "./logger/logging-strategy-config.ts"
 
 function bootstrap() {
   try {

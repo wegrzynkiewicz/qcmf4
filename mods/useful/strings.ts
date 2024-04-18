@@ -6,10 +6,11 @@ export function indent(data: string, delimiter: string): string {
 }
 
 export function bindVariables(value: string, variables: Record<string, unknown>): string {
-  const replacer = (_match: string, parameter: string): string => {
+  const replacer = (match: string, parameter: string): string => {
     parameter = parameter.trim();
     const value = variables[parameter];
-    return String.prototype.toString.call(value) ?? _match;
+    const converted = `${value ?? match}`;
+    return converted;
   };
   return value.replace(/{{(?<key>.*?)}}/gm, replacer);
 }

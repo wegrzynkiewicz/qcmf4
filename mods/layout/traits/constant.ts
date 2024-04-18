@@ -2,13 +2,13 @@ import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
 import { LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
 import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
 import { JSONSchema } from "../schema/json-schema-types.ts";
-import { defineLayoutError, positiveResult } from "../flow.ts";
+import { defineLayoutError, PositiveLayoutResult } from "../flow.ts";
 import { LayoutResult } from "../flow.ts";
-import { negativeResult } from "../flow.ts";
+import { SingleNegativeLayoutResult } from "../flow.ts";
 
 export const invalidConstantErrorDef = defineLayoutError(
   "invalid-constant",
-  "Value does not match the constant '{{constant}}'.",
+  "Value does not match the constant ({{constant}}).",
 );
 
 export class ConstantLayoutTrait<T extends string>
@@ -25,12 +25,12 @@ export class ConstantLayoutTrait<T extends string>
   public [layoutTypeParserSymbol](value: unknown): LayoutResult<T> {
     const { constant, uppercase } = this;
     if (typeof value !== "string") {
-      return negativeResult(invalidConstantErrorDef, { constant });
+      return new SingleNegativeLayoutResult(invalidConstantErrorDef, { constant });
     }
     if (value.toLocaleUpperCase() === uppercase) {
-      return positiveResult(uppercase) as LayoutResult<T>;
+      return new PositiveLayoutResult(uppercase) as LayoutResult<T>;
     }
-    return negativeResult(invalidConstantErrorDef, { constant });
+    return new SingleNegativeLayoutResult(invalidConstantErrorDef, { constant });
   }
 
   public [layoutSchemaGeneratorSymbol](): JSONSchema {

@@ -1,4 +1,6 @@
 import { assertEquals } from "../../deps.ts";
+import { UnknownStructure } from "../../useful/types.ts";
+import { formatNegativeLayoutResult, isNegativeLayoutResult } from "../flow.ts";
 import { constant, defaulted, enumerate } from "../mod.ts";
 import {
   array,
@@ -10,6 +12,7 @@ import {
   integer,
   layout,
   LayoutJSONSchemaCreator,
+  LayoutParser,
   lessThanOrEqual,
   maxItems,
   maxLength,
@@ -168,4 +171,21 @@ Deno.test("complex example json schema creation", () => {
       "hobbies",
     ],
   });
+});
+
+Deno.test("complex example validation", () => {
+  const testInstance: UnknownStructure<TestLayoutType> = {
+    age: 160,
+    name: "te",
+    accept: "ALWAYS",
+    hobbies: ["js", "js"],
+    address: {
+      country: 123,
+    },
+  };
+  const parser = new LayoutParser();
+  const result = parser.parse(testInstance, testLayout);
+  if (isNegativeLayoutResult(result)) {
+    console.log(formatNegativeLayoutResult(result));
+  }
 });

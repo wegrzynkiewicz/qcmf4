@@ -3,9 +3,7 @@ import { UnknownLayoutArray } from "../defs.ts";
 import { layoutTraitSymbol } from "../defs.ts";
 import { InferEnumerate } from "../defs.ts";
 import { LayoutTrait } from "../defs.ts";
-import { NegativeLayoutResult } from "../flow.ts";
-import { isValidResult } from "../flow.ts";
-import { negativeResult } from "../flow.ts";
+import { GroupingNegativeLayoutResult, NegativeLayoutResult, PositiveLayoutResult } from "../flow.ts";
 import { defineLayoutError, LayoutResult } from "../flow.ts";
 import { LayoutParserContext, LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
 import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
@@ -13,7 +11,7 @@ import { JSONSchema } from "../schema/json-schema-types.ts";
 
 export const invalidEnumerateErrorDef = defineLayoutError(
   "invalid-enumerate",
-  "Value does not match any of the enumerated options:",
+  "Value does not match any of the enumerated options",
 );
 
 export class EnumerateLayoutType<T extends UnknownLayoutArray>
@@ -30,7 +28,7 @@ export class EnumerateLayoutType<T extends UnknownLayoutArray>
     for (const member of this.members) {
       try {
         const result = parser.parse(value, member);
-        if (isValidResult(result) === true) {
+        if (PositiveLayoutResult.is(result) === true) {
           return result;
         }
         tries.push(result);
@@ -38,7 +36,7 @@ export class EnumerateLayoutType<T extends UnknownLayoutArray>
         throw new Breaker("error-inside-enumerate-layout-parsing", { error, member });
       }
     }
-    return negativeResult(invalidEnumerateErrorDef, { tries });
+    return new GroupingNegativeLayoutResult(invalidEnumerateErrorDef, tries);
   }
 
   public [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {

@@ -2,7 +2,7 @@ import { AbstractLayoutType, layoutPrimarySchemaGeneratorSymbol } from "../abstr
 import { LayoutTrait } from "../../defs.ts";
 import { LayoutTypeValidator } from "../../validation.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
+import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
 import { layoutTypeParserSymbol } from "../../parsing.ts";
 
 export const invalidBooleanErrorDef = defineLayoutError(
@@ -13,9 +13,9 @@ export const invalidBooleanErrorDef = defineLayoutError(
 export class BooleanLayoutType extends AbstractLayoutType<boolean> {
   public [layoutTypeParserSymbol](value: unknown): LayoutResult<boolean> {
     if (typeof value !== "boolean") {
-      return negativeResult(invalidBooleanErrorDef);
+      return new SingleNegativeLayoutResult(invalidBooleanErrorDef);
     }
-    return positiveResult(value);
+    return new PositiveLayoutResult(value);
   }
 
   public [layoutPrimarySchemaGeneratorSymbol](): JSONSchema {

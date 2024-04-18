@@ -2,7 +2,7 @@ import { AbstractLayoutType, layoutPrimarySchemaGeneratorSymbol } from "../abstr
 import { LayoutTrait } from "../../defs.ts";
 import { LayoutTypeValidator } from "../../validation.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
+import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
 import { layoutTypeParserSymbol } from "../../parsing.ts";
 import { invalidNumberTypeErrorDef } from "./number-type.ts";
 
@@ -14,12 +14,12 @@ export const invalidIntegerErrorDef = defineLayoutError(
 export class IntegerLayoutType extends AbstractLayoutType<number> {
   public [layoutTypeParserSymbol](value: unknown): LayoutResult<number> {
     if (typeof value !== "number") {
-      return negativeResult(invalidNumberTypeErrorDef);
+      return new SingleNegativeLayoutResult(invalidNumberTypeErrorDef);
     }
     if (Number.isInteger(value) === false) {
-      return negativeResult(invalidIntegerErrorDef);
+      return new SingleNegativeLayoutResult(invalidIntegerErrorDef);
     }
-    return positiveResult(value);
+    return new PositiveLayoutResult(value);
   }
 
   public [layoutPrimarySchemaGeneratorSymbol](): JSONSchema {

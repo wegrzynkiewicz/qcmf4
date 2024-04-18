@@ -1,5 +1,5 @@
 import { LayoutTrait, layoutTraitSymbol } from "../../defs.ts";
-import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
+import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
 import { layoutTypeParserSymbol } from "../../parsing.ts";
 import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
@@ -49,10 +49,10 @@ export class LogicalLayoutType implements LayoutSchemaGenerator, LayoutTrait<boo
   public [layoutTypeParserSymbol](value: unknown): LayoutResult<boolean> {
     for (const [possibleValue, booleanValue] of map.entries()) {
       if (possibleValue === value) {
-        return positiveResult(booleanValue);
+        return new PositiveLayoutResult(booleanValue);
       }
     }
-    return negativeResult(invalidBooleanErrorDef);
+    return new SingleNegativeLayoutResult(invalidBooleanErrorDef);
   }
 
   public [layoutSchemaGeneratorSymbol](): JSONSchema {

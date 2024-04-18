@@ -1,5 +1,6 @@
 export type { InferLayout, UnknownLayout } from "./defs.ts";
 export type { LayoutResult } from "./flow.ts";
+export { LayoutParser } from "./parsing.ts";
 
 export { Layout, layout } from "./defs.ts";
 

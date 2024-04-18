@@ -1,12 +1,12 @@
 import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
-import { defineLayoutError, negativeResult, positiveResult } from "../../flow.ts";
+import { defineLayoutError, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
 import { LayoutResult } from "../../mod.ts";
 
 export const invalidMaxArrayItemsErrorDef = defineLayoutError(
   "invalid-max-array-items",
-  "Array exceeds maximum item limit. Expected '{{threshold}}' or less.",
+  "Array exceeds maximum item limit. Expected ({{threshold}}) or less.",
 );
 
 export class MaxArrayItemsLayoutTypeValidator implements LayoutSchemaGenerator, LayoutTypeValidator<unknown[]> {
@@ -17,9 +17,9 @@ export class MaxArrayItemsLayoutTypeValidator implements LayoutSchemaGenerator, 
   public [layoutTypeValidatorSymbol](value: unknown[]): LayoutResult<unknown[]> {
     const { threshold } = this;
     if (value.length > threshold) {
-      return negativeResult(invalidMaxArrayItemsErrorDef, { value, threshold });
+      return new SingleNegativeLayoutResult(invalidMaxArrayItemsErrorDef, { value, threshold });
     }
-    return positiveResult(value);
+    return new PositiveLayoutResult(value);
   }
 
   public [layoutSchemaGeneratorSymbol](): JSONSchema {

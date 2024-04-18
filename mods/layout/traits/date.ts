@@ -1,6 +1,6 @@
 import { LayoutTrait } from "../defs.ts";
-import { defineLayoutError, positiveResult } from "../flow.ts";
-import { negativeResult } from "../flow.ts";
+import { defineLayoutError, PositiveLayoutResult } from "../flow.ts";
+import { SingleNegativeLayoutResult } from "../flow.ts";
 import { LayoutResult } from "../flow.ts";
 import { layoutTypeParserSymbol } from "../parsing.ts";
 import { JSONSchema } from "../schema/json-schema-types.ts";
@@ -15,9 +15,9 @@ export const invalidDateErrorDef = defineLayoutError(
 
 export function parseDate(date: Date): LayoutResult<Date> {
   if (Number.isNaN(date.getTime())) {
-    return negativeResult(invalidDateErrorDef);
+    return new SingleNegativeLayoutResult(invalidDateErrorDef);
   }
-  return positiveResult(date);
+  return new PositiveLayoutResult(date);
 }
 
 export class DateLayoutType extends AbstractLayoutType<Date> {
@@ -29,7 +29,7 @@ export class DateLayoutType extends AbstractLayoutType<Date> {
       const date = new Date(value);
       return parseDate(date);
     }
-    return negativeResult(invalidDateErrorDef);
+    return new SingleNegativeLayoutResult(invalidDateErrorDef);
   }
 
   public [layoutPrimarySchemaGeneratorSymbol](): JSONSchema {

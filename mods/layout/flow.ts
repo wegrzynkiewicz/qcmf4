@@ -1,4 +1,3 @@
-import { isObject } from "../assert/asserts.ts";
 import { Registry } from "../dependency/registry.ts";
 import { bindVariables } from "../useful/strings.ts";
 
@@ -11,39 +10,82 @@ export interface LayoutErrorDefinition {
   readonly defaultMessage?: string;
 }
 
-export interface PositiveLayoutResult<T> {
-  readonly [layoutResultSymbol]: true;
-  readonly value: T;
+export class PositiveLayoutResult<T> {
+  public readonly valid = true;
+  public constructor(
+    public readonly value: T,
+  ) { }
+
+  public static is<T>(result: LayoutResult<T>): result is PositiveLayoutResult<T> {
+    return result.valid === true;
+  }
 }
 
-export function positiveResult<T>(value: T): PositiveLayoutResult<T> {
-  return { value, [layoutResultSymbol]: true };
+export interface LayoutFormatContext {
+  readonly indent: number;
+  readonly lines: string[];
 }
 
-export interface NegativeLayoutResult {
-  readonly data?: LayoutErrorData;
-  readonly definition: LayoutErrorDefinition;
-  readonly [layoutResultSymbol]: false;
+export class SingleNegativeLayoutResult {
+  public readonly valid = false;
+  public constructor(
+    public readonly definition: LayoutErrorDefinition,
+    public readonly data: LayoutErrorData = {},
+  ) { }
+
+  public static is(result: UnknownLayoutResult): result is SingleNegativeLayoutResult {
+    return result.valid === false;
+  }
+
+  public format(context: LayoutFormatContext): void {
+    const { indent, lines } = context;
+    const { defaultMessage, kind } = this.definition;
+    const label = bindVariables(defaultMessage ?? kind, this.data);
+    const message = `${"  ".repeat(indent)}${label}`;
+    lines.push(message);
+  }
 }
 
-export type LayoutResult<T> = PositiveLayoutResult<T> | NegativeLayoutResult;
+export class GroupingNegativeLayoutResult {
+  public readonly valid = false;
+  public constructor(
+    public readonly definition: LayoutErrorDefinition,
+    public readonly children: NegativeLayoutResult[],
+    public readonly data: LayoutErrorData = {},
+  ) { }
+
+  public static is(result: UnknownLayoutResult): result is GroupingNegativeLayoutResult {
+    return result.valid === false;
+  }
+
+  public format(context: LayoutFormatContext): void {
+    const { indent, lines } = context;
+    const { defaultMessage, kind } = this.definition;
+    const count = this.children.length;
+    if (count === 0) {
+      return;
+    }
+    const label = bindVariables(defaultMessage ?? kind, this.data);
+    const message = `${"  ".repeat(indent)}${label} {`;
+    lines.push(message);
+    for (const child of Object.values(this.children)) {
+      const childContext: LayoutFormatContext = {
+        indent: indent + 1,
+        lines,
+      };
+      child.format(childContext);
+    }
+    lines.push(`${"  ".repeat(indent)}}`);
+  }
+}
+
+export function isNegativeLayoutResult(result: UnknownLayoutResult): result is NegativeLayoutResult {
+  return result.valid === false;
+}
+
+export type NegativeLayoutResult = SingleNegativeLayoutResult | GroupingNegativeLayoutResult;
+export type LayoutResult<T> = PositiveLayoutResult<T> | SingleNegativeLayoutResult | GroupingNegativeLayoutResult;
 export type UnknownLayoutResult = LayoutResult<unknown>;
-
-export function negativeResult(definition: LayoutErrorDefinition, data?: LayoutErrorData): NegativeLayoutResult {
-  return { data, definition, [layoutResultSymbol]: false };
-}
-
-export function isLayoutResult(value: unknown): value is LayoutResult<unknown> {
-  return isObject(value) && layoutResultSymbol in value;
-}
-
-export function isValidResult<T>(result: LayoutResult<T>): result is PositiveLayoutResult<T> {
-  return result[layoutResultSymbol] === true;
-}
-
-export function isNegativeResult<T>(result: UnknownLayoutResult): result is NegativeLayoutResult {
-  return result[layoutResultSymbol] === false;
-}
 
 export const layoutErrorRegistry = new Registry<LayoutErrorDefinition>((e) => e.kind);
 
@@ -55,24 +97,7 @@ export function defineLayoutError(kind: string, defaultMessage?: string): Layout
 
 export function formatNegativeLayoutResult(result: NegativeLayoutResult): string {
   const lines: string[] = [];
-  const format = (value: unknown, indent: number): void => {
-    if (isLayoutResult(value) && isNegativeResult(value)) {
-      const { data, definition } = value;
-      const { defaultMessage, kind } = definition;
-      const label = bindVariables(defaultMessage ?? kind, data ?? {});
-      const message = `${"  ".repeat(indent)}${label}`;
-      lines.push(message);
-      for (const child of Object.values(data ?? {})) {
-        format(child, indent + 1);
-      }
-    }
-    if (Array.isArray(value)) {
-      for (const item of value) {
-        format(item, indent);
-      }
-    }
-  };
-  format(result, 0);
-  const messages = lines.join("\n");
-  return messages;
+  result.format({ indent: 0, lines });
+  const message = lines.join("\n");
+  return message;
 }

@@ -1,6 +1,6 @@
 import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
-import { LayoutResult, defineLayoutError, negativeResult } from "../flow.ts";
-import { positiveResult } from "../flow.ts";
+import { defineLayoutError, LayoutResult, SingleNegativeLayoutResult } from "../flow.ts";
+import { PositiveLayoutResult } from "../flow.ts";
 import { LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
 
 export const invalidUndefinedErrorDef = defineLayoutError(
@@ -13,9 +13,9 @@ export class UndefinedLayoutType implements LayoutTypeParser<undefined>, LayoutT
 
   public [layoutTypeParserSymbol](value: unknown): LayoutResult<undefined> {
     if (value === undefined) {
-      return positiveResult(undefined);
+      return new PositiveLayoutResult(undefined);
     }
-    return negativeResult(invalidUndefinedErrorDef);
+    return new SingleNegativeLayoutResult(invalidUndefinedErrorDef);
   }
 }
 

@@ -1,11 +1,11 @@
 import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
 import { JSONSchema } from "../../schema/json-schema-types.ts";
 import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
-import { defineLayoutError, LayoutResult, negativeResult, positiveResult } from "../../flow.ts";
+import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
 
 export const invalidLessThanErrorDef = defineLayoutError(
   "invalid-less-than",
-  "Value is not less than '{{expected}}'.",
+  "Value is not less than ({{expected}}).",
 );
 
 export class LessThanLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
@@ -15,9 +15,9 @@ export class LessThanLayoutTypeValidator implements LayoutTypeValidator<number>,
 
   public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
     if (value < this.threshold) {
-      return positiveResult(value);
+      return new PositiveLayoutResult(value);
     }
-    return negativeResult(invalidLessThanErrorDef, { actual: value, expected: this.threshold });
+    return new SingleNegativeLayoutResult(invalidLessThanErrorDef, { actual: value, expected: this.threshold });
   }
 
   public [layoutSchemaGeneratorSymbol](): JSONSchema {
@@ -31,7 +31,7 @@ export function lessThan(threshold: number): LessThanLayoutTypeValidator {
 
 export const invalidLessThanEqualErrorDef = defineLayoutError(
   "invalid-less-than-or-equal",
-  "Value is not less than or equal to '{{expected}}'.",
+  "Value is not less than or equal to ({{expected}}).",
 );
 
 export class LessThanOrEqualLayoutTypeValidator implements LayoutTypeValidator<number>, LayoutSchemaGenerator {
@@ -41,9 +41,9 @@ export class LessThanOrEqualLayoutTypeValidator implements LayoutTypeValidator<n
 
   public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
     if (value <= this.threshold) {
-      return positiveResult(value);
+      return new PositiveLayoutResult(value);
     }
-    return negativeResult(invalidLessThanEqualErrorDef, { actual: value, expected: this.threshold });
+    return new SingleNegativeLayoutResult(invalidLessThanEqualErrorDef, { actual: value, expected: this.threshold });
   }
 
   public [layoutSchemaGeneratorSymbol](): JSONSchema {

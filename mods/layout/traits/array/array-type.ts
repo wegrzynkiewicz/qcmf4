@@ -1,6 +1,5 @@
 import { LayoutTrait, UnknownLayout } from "../../defs.ts";
-import { isNegativeResult } from "../../flow.ts";
-import { NegativeLayoutResult, negativeResult } from "../../flow.ts";
+import { GroupingNegativeLayoutResult, NegativeLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
 import { defineLayoutError, LayoutResult } from "../../flow.ts";
 import { InferLayout } from "../../mod.ts";
 import { LayoutParserContext, layoutTypeParserSymbol } from "../../parsing.ts";
@@ -16,12 +15,12 @@ export const invalidArrayErrorDef = defineLayoutError(
 
 export const invalidArrayItemErrorDef = defineLayoutError(
   "invalid-array-item",
-  "Some elements in the array are invalid:",
+  "Some elements in the array are invalid",
 );
 
 export const invalidArrayItemIndexErrorDef = defineLayoutError(
   "invalid-array-item-index",
-  "Element at index [{{index}}] is invalid:",
+  "Element at index [{{index}}] is invalid",
 );
 
 class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
@@ -34,15 +33,15 @@ class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
 
   public [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): LayoutResult<T[]> {
     if (Array.isArray(value) === false) {
-      return negativeResult(invalidArrayErrorDef);
+      return new SingleNegativeLayoutResult(invalidArrayErrorDef);
     }
     const { parser } = context;
     const list: T[] = [];
     const tries: NegativeLayoutResult[] = [];
     for (const [index, item] of value.entries()) {
       const result = parser.parse(item, this.itemsLayout);
-      if (isNegativeResult(result)) {
-        const indexResult = negativeResult(invalidArrayItemIndexErrorDef, { index, result });
+      if (SingleNegativeLayoutResult.is(result)) {
+        const indexResult = new SingleNegativeLayoutResult(invalidArrayItemIndexErrorDef, { index, result });
         tries.push(indexResult);
         continue;
       }
@@ -55,7 +54,7 @@ class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
     if (count === 1) {
       return tries[0];
     }
-    return negativeResult(invalidArrayItemErrorDef, { tries });
+    return new GroupingNegativeLayoutResult(invalidArrayItemErrorDef, tries);
   }
 
   public [layoutPrimarySchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
