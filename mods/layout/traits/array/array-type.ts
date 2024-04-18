@@ -23,10 +23,10 @@ export const invalidArrayItemIndexErrorDef = defineLayoutError(
   "Element at index [{{index}}] is invalid",
 );
 
-class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
+class ArrayLayoutType<T extends UnknownLayout> extends AbstractLayoutType<unknown[]> {
   public constructor(
-    public itemsLayout: UnknownLayout,
-    validators: LayoutTypeValidator<T[]>[],
+    public itemsLayout: T,
+    validators: LayoutTypeValidator<unknown[]>[],
   ) {
     super(validators);
   }
@@ -67,9 +67,9 @@ class ArrayLayoutType<T> extends AbstractLayoutType<T[]> {
   }
 }
 
-export const array = <TLayout extends UnknownLayout, TResult = InferLayout<TLayout>>(
+export const array = <TLayout extends UnknownLayout>(
   itemsLayout: TLayout,
-  ...validators: LayoutTypeValidator<TResult[]>[]
-): LayoutTrait<TResult[]> => {
-  return new ArrayLayoutType<TResult>(itemsLayout, validators);
+  ...validators: LayoutTypeValidator<unknown[]>[]
+): LayoutTrait<InferLayout<TLayout>[]> => {
+  return new ArrayLayoutType<TLayout>(itemsLayout, validators);
 };
