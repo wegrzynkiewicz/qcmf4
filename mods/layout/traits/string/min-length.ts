@@ -1,7 +1,7 @@
-import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { JSONSchema } from "../../json-schema-types.ts";
+import { LayoutTypeValidator } from "../../parsing.ts";
 import { defineLayoutError, LayoutResult } from "../../flow.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { LayoutSchemaGenerator } from "../../schema.ts";
 import { SingleNegativeLayoutResult } from "../../flow.ts";
 import { PositiveLayoutResult } from "../../flow.ts";
 
@@ -15,7 +15,7 @@ export class MinStringLengthLayoutTypeValidator implements LayoutSchemaGenerator
     private threshold: number,
   ) {}
 
-  public [layoutTypeValidatorSymbol](value: string): LayoutResult<string> {
+  public validate(value: string): LayoutResult<string> {
     const { threshold } = this;
     if (value.length < threshold) {
       return new SingleNegativeLayoutResult(invalidMinStringLengthErrorDef, { value, threshold });
@@ -23,7 +23,7 @@ export class MinStringLengthLayoutTypeValidator implements LayoutSchemaGenerator
     return new PositiveLayoutResult(value);
   }
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     return { minLength: this.threshold };
   }
 }

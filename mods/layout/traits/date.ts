@@ -2,11 +2,9 @@ import { LayoutTrait } from "../defs.ts";
 import { defineLayoutError, PositiveLayoutResult } from "../flow.ts";
 import { SingleNegativeLayoutResult } from "../flow.ts";
 import { LayoutResult } from "../flow.ts";
-import { layoutTypeParserSymbol } from "../parsing.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
-import { LayoutTypeValidator } from "../validation.ts";
-import { layoutPrimarySchemaGeneratorSymbol } from "./abstract-type.ts";
-import { AbstractLayoutType } from "./abstract-type.ts";
+import { JSONSchema } from "../json-schema-types.ts";
+import { LayoutTypeValidator } from "../parsing.ts";
+import { WithValidatorsLayoutType } from "./with-validators.ts";
 
 export const invalidDateErrorDef = defineLayoutError(
   "invalid-date",
@@ -20,8 +18,8 @@ export function parseDate(date: Date): LayoutResult<Date> {
   return new PositiveLayoutResult(date);
 }
 
-export class DateLayoutType extends AbstractLayoutType<Date> {
-  public [layoutTypeParserSymbol](value: unknown): LayoutResult<Date> {
+export class DateLayoutType extends WithValidatorsLayoutType<Date> {
+  public parse(value: unknown): LayoutResult<Date> {
     if (value instanceof Date) {
       return parseDate(value);
     }
@@ -32,7 +30,7 @@ export class DateLayoutType extends AbstractLayoutType<Date> {
     return new SingleNegativeLayoutResult(invalidDateErrorDef);
   }
 
-  public [layoutPrimarySchemaGeneratorSymbol](): JSONSchema {
+  public generatePrimaryTypeSchema(): JSONSchema {
     const targetSchema: JSONSchema = {
       type: "string",
       format: "date-time",

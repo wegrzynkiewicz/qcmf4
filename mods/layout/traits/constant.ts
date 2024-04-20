@@ -1,28 +1,26 @@
-import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
-import { LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
+import { LayoutTrait } from "../defs.ts";
+import { JSONSchema } from "../json-schema-types.ts";
 import { defineLayoutError, PositiveLayoutResult } from "../flow.ts";
 import { LayoutResult } from "../flow.ts";
 import { SingleNegativeLayoutResult } from "../flow.ts";
+import { WithoutValidatorsLayoutType } from "./without-validation.ts";
 
 export const invalidConstantErrorDef = defineLayoutError(
   "invalid-constant",
   "Value does not match the constant ({{constant}}).",
 );
 
-export class ConstantLayoutTrait<T extends string>
-  implements LayoutSchemaGenerator, LayoutTypeParser<T>, LayoutTrait<T> {
-  public readonly [layoutTraitSymbol] = 1;
+export class ConstantLayoutTrait<T extends string> extends WithoutValidatorsLayoutType<T> {
   private readonly uppercase: string;
 
   public constructor(
     public constant: T,
   ) {
+    super();
     this.uppercase = constant.toLocaleUpperCase();
   }
 
-  public [layoutTypeParserSymbol](value: unknown): LayoutResult<T> {
+  public parse(value: unknown): LayoutResult<T> {
     const { constant, uppercase } = this;
     if (typeof value !== "string") {
       return new SingleNegativeLayoutResult(invalidConstantErrorDef, { constant });
@@ -33,7 +31,7 @@ export class ConstantLayoutTrait<T extends string>
     return new SingleNegativeLayoutResult(invalidConstantErrorDef, { constant });
   }
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     return { const: this.constant };
   }
 }

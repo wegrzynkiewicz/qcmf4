@@ -3,8 +3,6 @@ import { bindVariables } from "../useful/strings.ts";
 
 export type LayoutErrorData = Record<string, unknown>;
 
-export const layoutResultSymbol = Symbol("LayoutResult");
-
 export interface LayoutErrorDefinition {
   readonly kind: string;
   readonly defaultMessage?: string;
@@ -14,7 +12,7 @@ export class PositiveLayoutResult<T> {
   public readonly valid = true;
   public constructor(
     public readonly value: T,
-  ) { }
+  ) {}
 
   public static is<T>(result: LayoutResult<T>): result is PositiveLayoutResult<T> {
     return result.valid === true;
@@ -31,7 +29,7 @@ export class SingleNegativeLayoutResult {
   public constructor(
     public readonly definition: LayoutErrorDefinition,
     public readonly data: LayoutErrorData = {},
-  ) { }
+  ) {}
 
   public static is(result: UnknownLayoutResult): result is SingleNegativeLayoutResult {
     return result.valid === false;
@@ -52,7 +50,7 @@ export class GroupingNegativeLayoutResult {
     public readonly definition: LayoutErrorDefinition,
     public readonly children: NegativeLayoutResult[],
     public readonly data: LayoutErrorData = {},
-  ) { }
+  ) {}
 
   public static is(result: UnknownLayoutResult): result is GroupingNegativeLayoutResult {
     return result.valid === false;

@@ -1,7 +1,7 @@
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
-import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
 import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
+import { JSONSchema } from "../../json-schema-types.ts";
+import { LayoutTypeValidator } from "../../parsing.ts";
+import { LayoutSchemaGenerator } from "../../schema.ts";
 
 export const invalidGreaterThan = defineLayoutError(
   "invalid-greater-than",
@@ -13,14 +13,14 @@ export class GreaterThanLayoutTypeValidator implements LayoutTypeValidator<numbe
     private threshold: number,
   ) {}
 
-  public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
+  public validate(value: number): LayoutResult<number> {
     if (value > this.threshold) {
       return new PositiveLayoutResult(value);
     }
     return new SingleNegativeLayoutResult(invalidGreaterThan, { actual: value, expected: this.threshold });
   }
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     return { exclusiveMinimum: this.threshold };
   }
 }
@@ -39,14 +39,14 @@ export class GreaterThanOrEqualLayoutTypeValidator implements LayoutTypeValidato
     private threshold: number,
   ) {}
 
-  public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
+  public validate(value: number): LayoutResult<number> {
     if (value >= this.threshold) {
       return new PositiveLayoutResult(value);
     }
     return new SingleNegativeLayoutResult(invalidGreaterThanEqual, { actual: value, expected: this.threshold });
   }
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     return { minimum: this.threshold };
   }
 }

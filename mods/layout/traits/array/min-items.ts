@@ -1,7 +1,7 @@
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
-import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { LayoutSchemaGenerator } from "../../schema.ts";
+import { JSONSchema } from "../../json-schema-types.ts";
 import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
+import { LayoutTypeValidator } from "../../parsing.ts";
 
 export const invalidMinArrayItemsErrorDef = defineLayoutError(
   "invalid-min-array-items",
@@ -13,7 +13,7 @@ export class MinArrayItemsLayoutTypeValidator implements LayoutSchemaGenerator, 
     private threshold: number,
   ) {}
 
-  public [layoutTypeValidatorSymbol](value: unknown[]): LayoutResult<unknown[]> {
+  public validate(value: unknown[]): LayoutResult<unknown[]> {
     const { threshold } = this;
     if (value.length < threshold) {
       return new SingleNegativeLayoutResult(invalidMinArrayItemsErrorDef, { value, threshold });
@@ -21,7 +21,7 @@ export class MinArrayItemsLayoutTypeValidator implements LayoutSchemaGenerator, 
     return new PositiveLayoutResult(value);
   }
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     return { minItems: this.threshold };
   }
 }

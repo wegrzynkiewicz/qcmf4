@@ -1,28 +1,30 @@
 import { Breaker } from "../../assert/breaker.ts";
-import { UnknownLayoutArray } from "../defs.ts";
-import { layoutTraitSymbol } from "../defs.ts";
-import { InferEnumerate } from "../defs.ts";
-import { LayoutTrait } from "../defs.ts";
-import { GroupingNegativeLayoutResult, NegativeLayoutResult, PositiveLayoutResult } from "../flow.ts";
-import { defineLayoutError, LayoutResult } from "../flow.ts";
-import { LayoutParserContext, LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
-import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
+import { InferEnumerate, LayoutTrait, UnknownLayoutArray } from "../defs.ts";
+import {
+  defineLayoutError,
+  GroupingNegativeLayoutResult,
+  LayoutResult,
+  NegativeLayoutResult,
+  PositiveLayoutResult,
+} from "../flow.ts";
+import { JSONSchema } from "../json-schema-types.ts";
+import { LayoutParserContext } from "../parsing.ts";
+import { LayoutSchemaGeneratorContext } from "../schema.ts";
+import { WithoutValidatorsLayoutType } from "./without-validation.ts";
 
 export const invalidEnumerateErrorDef = defineLayoutError(
   "invalid-enumerate",
   "Value does not match any of the enumerated options",
 );
 
-export class EnumerateLayoutType<T extends UnknownLayoutArray>
-  implements LayoutSchemaGenerator, LayoutTypeParser<T>, LayoutTrait<T> {
-  public readonly [layoutTraitSymbol] = 1;
-
+export class EnumerateLayoutType<T extends UnknownLayoutArray> extends WithoutValidatorsLayoutType<T> {
   public constructor(
     public readonly members: T,
-  ) {}
+  ) {
+    super();
+  }
 
-  public [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): LayoutResult<T> {
+  public parse(value: unknown, context: LayoutParserContext): LayoutResult<T> {
     const { parser } = context;
     const tries: NegativeLayoutResult[] = [];
     for (const member of this.members) {
@@ -39,7 +41,7 @@ export class EnumerateLayoutType<T extends UnknownLayoutArray>
     return new GroupingNegativeLayoutResult(invalidEnumerateErrorDef, tries);
   }
 
-  public [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
+  public generateSchema(context: LayoutSchemaGeneratorContext): JSONSchema {
     const { schemaCreator } = context;
     const oneOf = this.members.map((layout) => {
       const schema = schemaCreator.create(layout);

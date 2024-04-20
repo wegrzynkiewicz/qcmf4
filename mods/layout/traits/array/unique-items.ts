@@ -1,9 +1,8 @@
-import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
-import { layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { JSONSchema } from "../../json-schema-types.ts";
 import { defineLayoutError, LayoutResult } from "../../flow.ts";
 import { PositiveLayoutResult } from "../../flow.ts";
 import { SingleNegativeLayoutResult } from "../../flow.ts";
+import { LayoutTypeValidator } from "../../parsing.ts";
 
 export const invalidUniqueArrayItemsErrorDef = defineLayoutError(
   "invalid-unique-array-items",
@@ -15,7 +14,7 @@ function onlyUnique<T>(value: T, index: number, array: T[]) {
 }
 
 export class UniqueArrayItemsLayoutTypeValidator implements LayoutTypeValidator<unknown[]> {
-  public [layoutTypeValidatorSymbol](value: unknown[]): LayoutResult<unknown[]> {
+  public validate(value: unknown[]): LayoutResult<unknown[]> {
     const unique = value.filter(onlyUnique);
     if (value.length == unique.length) {
       return new PositiveLayoutResult(value);
@@ -23,7 +22,7 @@ export class UniqueArrayItemsLayoutTypeValidator implements LayoutTypeValidator<
     return new SingleNegativeLayoutResult(invalidUniqueArrayItemsErrorDef);
   }
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     return { uniqueItems: true };
   }
 }

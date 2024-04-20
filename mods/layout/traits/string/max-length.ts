@@ -1,7 +1,7 @@
-import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { JSONSchema } from "../../json-schema-types.ts";
+import { LayoutTypeValidator } from "../../parsing.ts";
 import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
+import { LayoutSchemaGenerator } from "../../schema.ts";
 
 export const invalidMaxStringLengthErrorDef = defineLayoutError(
   "invalid-max-string-length",
@@ -13,7 +13,7 @@ export class MaxStringLengthLayoutTypeValidator implements LayoutSchemaGenerator
     private threshold: number,
   ) {}
 
-  public [layoutTypeValidatorSymbol](value: string): LayoutResult<string> {
+  public validate(value: string): LayoutResult<string> {
     const { threshold } = this;
     if (value.length > threshold) {
       return new SingleNegativeLayoutResult(invalidMaxStringLengthErrorDef, { value, threshold });
@@ -21,7 +21,7 @@ export class MaxStringLengthLayoutTypeValidator implements LayoutSchemaGenerator
     return new PositiveLayoutResult(value);
   }
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     return { maxLength: this.threshold };
   }
 }

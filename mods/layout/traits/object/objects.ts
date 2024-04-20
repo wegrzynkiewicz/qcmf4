@@ -1,22 +1,12 @@
 import { Breaker } from "../../../assert/breaker.ts";
-import { InferLayoutObject, LayoutTrait, UnknownLayoutMap, UnknownLayoutTrait } from "../../defs.ts";
+import { InferLayoutObject, LayoutTrait, UnknownLayoutMap } from "../../defs.ts";
 import { GroupingNegativeLayoutResult, PositiveLayoutResult } from "../../flow.ts";
 import { defineLayoutError, LayoutResult, NegativeLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
-import { LayoutParserContext, layoutTypeParserSymbol } from "../../parsing.ts";
-import { LayoutSchemaGeneratorContext } from "../../schema/defs.ts";
-import { JSONSchema } from "../../schema/json-schema-types.ts";
-import { LayoutTypeValidator } from "../../validation.ts";
-import { AbstractLayoutType, layoutPrimarySchemaGeneratorSymbol } from "../abstract-type.ts";
-import { isOptionalLayoutType } from "./optional.ts";
-
-export function isRequiredField(traits: UnknownLayoutTrait[]): boolean {
-  for (const trait of traits) {
-    if (isOptionalLayoutType(trait)) {
-      return false;
-    }
-  }
-  return true;
-}
+import { LayoutParserContext } from "../../parsing.ts";
+import { LayoutSchemaGeneratorContext } from "../../schema.ts";
+import { JSONSchema } from "../../json-schema-types.ts";
+import { LayoutTypeValidator } from "../../parsing.ts";
+import { WithValidatorsLayoutType } from "../with-validators.ts";
 
 export const invalidObjectErrorDef = defineLayoutError(
   "invalid-object",
@@ -43,7 +33,7 @@ export const missingObjectFieldErrorDef = defineLayoutError(
   "Missing required field named ({{field}}).",
 );
 
-export class LayoutObjectTrait<T extends UnknownLayoutMap> extends AbstractLayoutType<InferLayoutObject<T>> {
+export class LayoutObjectTrait<T extends UnknownLayoutMap> extends WithValidatorsLayoutType<InferLayoutObject<T>> {
   protected requiredFields = new Map<string, boolean>();
 
   public constructor(
@@ -52,11 +42,11 @@ export class LayoutObjectTrait<T extends UnknownLayoutMap> extends AbstractLayou
   ) {
     super(validators);
     for (const [fieldName, layout] of Object.entries(fields)) {
-      this.requiredFields.set(fieldName, isRequiredField(layout.traits));
+      this.requiredFields.set(fieldName, layout.required);
     }
   }
 
-  public [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): LayoutResult<InferLayoutObject<T>> {
+  public parse(value: unknown, context: LayoutParserContext): LayoutResult<InferLayoutObject<T>> {
     const { parser } = context;
     if (typeof value !== "object") {
       return new SingleNegativeLayoutResult(invalidObjectErrorDef);
@@ -100,7 +90,7 @@ export class LayoutObjectTrait<T extends UnknownLayoutMap> extends AbstractLayou
     return new GroupingNegativeLayoutResult(invalidObjectFieldsErrorDef, tries);
   }
 
-  public [layoutPrimarySchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
+  public generatePrimaryTypeSchema(context: LayoutSchemaGeneratorContext): JSONSchema {
     const { schemaCreator } = context;
     const required: string[] = [];
     const properties = Object.entries(this.fields).map(([fieldName, layout]) => {

@@ -1,27 +1,14 @@
 import { Breaker } from "../assert/breaker.ts";
-import { isObject } from "../assert/asserts.ts";
 import { InferLayout, UnknownLayout } from "./defs.ts";
 import {
+  defineLayoutError,
   GroupingNegativeLayoutResult,
   LayoutResult,
+  NegativeLayoutResult,
   PositiveLayoutResult,
   SingleNegativeLayoutResult,
 } from "./flow.ts";
-import { defineLayoutError } from "./flow.ts";
-import { NegativeLayoutResult } from "./flow.ts";
-
-export interface LayoutParserContext {
-  parser: LayoutParser;
-}
-
-export const layoutTypeParserSymbol = Symbol("LayoutTypeParser");
-export interface LayoutTypeParser<T> {
-  [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): LayoutResult<T>;
-}
-export type UnknownLayoutTypeParser = LayoutTypeParser<unknown>;
-export function isLayoutTypeParser(value: unknown): value is UnknownLayoutTypeParser {
-  return isObject(value) && layoutTypeParserSymbol in value;
-}
+import { LayoutSchemaGenerator } from "./schema.ts";
 
 export const parserEmptyErrorDef = defineLayoutError(
   "parser-empty",
@@ -37,18 +24,15 @@ export class LayoutParser {
   public parse<T extends UnknownLayout>(value: unknown, layout: T): LayoutResult<InferLayout<T>> {
     const context: LayoutParserContext = { parser: this };
     const tries: NegativeLayoutResult[] = [];
-    for (const trait of layout.traits) {
-      if (isLayoutTypeParser(trait) === false) {
-        continue;
-      }
+    for (const parser of layout.parsers) {
       try {
-        const result = trait[layoutTypeParserSymbol](value, context);
+        const result = parser.parse(value, context);
         if (PositiveLayoutResult.is(result) === true) {
           return result as LayoutResult<InferLayout<T>>;
         }
         tries.push(result);
       } catch (error) {
-        throw new Breaker("error-inside-layout-parser", { error, trait, value });
+        throw new Breaker("error-inside-layout-parser", { error, parser, value });
       }
     }
     const count = tries.length;
@@ -65,3 +49,18 @@ export class LayoutParser {
 export function provideLayoutParser() {
   return new LayoutParser();
 }
+
+export interface LayoutParserContext {
+  parser: LayoutParser;
+}
+
+export interface LayoutTypeParser<T> {
+  parse(value: unknown, context: LayoutParserContext): LayoutResult<T>;
+}
+
+export type UnknownLayoutTypeParser = LayoutTypeParser<unknown>;
+
+export interface LayoutTypeValidator<T> extends LayoutSchemaGenerator {
+  validate(value: T): LayoutResult<T>;
+}
+export type UnknownLayoutTypeValidator = LayoutTypeValidator<unknown>;

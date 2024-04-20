@@ -1,7 +1,26 @@
+import { InferArray } from "../useful/types.ts";
+import { LayoutTypeParser } from "./parsing.ts";
+import { LayoutSchemaGenerator } from "./schema.ts";
+
 export class Layout<T> {
+  public description: string = "";
+  public key: string = "";
+  public parsers: LayoutTypeParser<unknown>[] = [];
+  public required = true;
+  public schemaGenerators: LayoutSchemaGenerator[] = [];
+  public title: string = "";
+
+  public get optional(): boolean {
+    return !this.required;
+  }
+
   public constructor(
     public traits: UnknownLayoutTrait[],
-  ) {}
+  ) {
+    for (const trait of traits) {
+      trait.init(this);
+    }
+  }
 }
 export type UnknownLayout = Layout<unknown>;
 export type UnknownLayoutArray = UnknownLayout[];
@@ -11,16 +30,18 @@ export function layout<T extends LayoutTrait<unknown>[]>(...args: T): Layout<T> 
   return new Layout(args);
 }
 
-export const layoutTraitSymbol = Symbol("LayoutTrait");
-
 export interface LayoutTrait<T> {
-  readonly [layoutTraitSymbol]: 1;
+  init(layout: UnknownLayout): void;
 }
 export type UnknownLayoutTrait = LayoutTrait<unknown>;
 
 export const layoutOptionalSymbol = Symbol("LayoutOptional");
 export interface LayoutOptional extends LayoutTrait<never> {
   readonly [layoutOptionalSymbol]: 1;
+}
+
+export interface LayoutKey<T> extends LayoutTrait<never> {
+  readonly key: T;
 }
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
@@ -47,8 +68,12 @@ export type InferEnumerate<T extends UnknownLayoutArray> = Expand<InferLayout<In
 
 export type InferLayoutArray<T extends UnknownLayoutArray> = Expand<InferLayout<InferArray<T>>[]>;
 
-export type InferLayoutType<T> = T extends LayoutOptional ? never : T extends LayoutTrait<infer U> ? U : never;
+export type InferLayoutType<T> = T extends LayoutKey<unknown> ? never
+  : T extends LayoutOptional ? never
+  : T extends LayoutTrait<infer U> ? U
+  : never;
 
-export type InferArray<T> = T extends Array<infer U> ? U : never;
+export type InferLayoutKeyFromUnion<T> = T extends LayoutKey<infer U> ? U : never;
+export type InferLayoutKey<T> = T extends Layout<infer U> ? InferLayoutKeyFromUnion<InferArray<U>> : never;
 
 export type InferLayout<T extends UnknownLayout> = T extends Layout<infer U> ? InferLayoutType<InferArray<U>> : never;

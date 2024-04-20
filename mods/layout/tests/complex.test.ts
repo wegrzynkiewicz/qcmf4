@@ -1,29 +1,28 @@
 import { assertEquals } from "../../deps.ts";
 import { UnknownStructure } from "../../useful/types.ts";
+import { InferLayout, layout } from "../defs.ts";
 import { formatNegativeLayoutResult, isNegativeLayoutResult } from "../flow.ts";
-import { constant, defaulted, enumerate } from "../mod.ts";
-import {
-  array,
-  boolean,
-  date,
-  description,
-  greaterThan,
-  InferLayout,
-  integer,
-  layout,
-  LayoutJSONSchemaCreator,
-  LayoutParser,
-  lessThanOrEqual,
-  maxItems,
-  maxLength,
-  minItems,
-  minLength,
-  number,
-  object,
-  optional,
-  string,
-  uniqueItems,
-} from "../mod.ts";
+import { LayoutParser } from "../parsing.ts";
+import { LayoutJSONSchemaCreator } from "../schema.ts";
+import { array } from "../traits/array/array-type.ts";
+import { maxItems } from "../traits/array/max-items.ts";
+import { minItems } from "../traits/array/min-items.ts";
+import { uniqueItems } from "../traits/array/unique-items.ts";
+import { boolean } from "../traits/boolean/boolean-type.ts";
+import { constant } from "../traits/constant.ts";
+import { date } from "../traits/date.ts";
+import { defaulted } from "../traits/defaulted.ts";
+import { description } from "../traits/description.ts";
+import { enumerate } from "../traits/enumerate-type.ts";
+import { greaterThan } from "../traits/number/greater-than.ts";
+import { integer } from "../traits/number/integer-type.ts";
+import { lessThanOrEqual } from "../traits/number/less-than.ts";
+import { number } from "../traits/number/number-type.ts";
+import { object } from "../traits/object/objects.ts";
+import { optional } from "../traits/object/optional.ts";
+import { maxLength } from "../traits/string/max-length.ts";
+import { minLength } from "../traits/string/min-length.ts";
+import { string } from "../traits/string/string-type.ts";
 
 const testLayout = layout(
   object({
@@ -89,7 +88,7 @@ Deno.test("validate complex example", () => {
     age: 4,
     name: "test",
     accept: "ALWAYS",
-    gender: "MALE",
+    gender: "FEMALE",
     birthDate: new Date(),
     isCompany: true,
     address: {

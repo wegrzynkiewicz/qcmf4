@@ -1,5 +1,6 @@
-import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../../validation.ts";
+import { LayoutTypeValidator } from "../../parsing.ts";
 import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
+import { JSONSchema } from "../../json-schema-types.ts";
 
 export const invalidFiniteNumberErrorDef = defineLayoutError(
   "invalid-finite-number",
@@ -7,11 +8,15 @@ export const invalidFiniteNumberErrorDef = defineLayoutError(
 );
 
 export class IsFiniteNumberValidator implements LayoutTypeValidator<number> {
-  public [layoutTypeValidatorSymbol](value: number): LayoutResult<number> {
+  public validate(value: number): LayoutResult<number> {
     if (Number.isFinite(value)) {
       return new PositiveLayoutResult(value);
     }
     return new SingleNegativeLayoutResult(invalidFiniteNumberErrorDef);
+  }
+
+  public generateSchema(): Partial<JSONSchema> {
+    return {};
   }
 }
 

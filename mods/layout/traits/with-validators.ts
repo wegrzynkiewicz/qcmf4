@@ -1,4 +1,4 @@
-import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
+import { LayoutTrait, UnknownLayout } from "../defs.ts";
 import {
   defineLayoutError,
   GroupingNegativeLayoutResult,
@@ -7,32 +7,28 @@ import {
   PositiveLayoutResult,
   SingleNegativeLayoutResult,
 } from "../flow.ts";
-import { LayoutParserContext, LayoutTypeParser, layoutTypeParserSymbol } from "../parsing.ts";
-import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
-import { LayoutTypeValidator, layoutTypeValidatorSymbol } from "../validation.ts";
-
-export const layoutPrimarySchemaGeneratorSymbol = Symbol("LayoutGenerateSchemaType");
+import { LayoutParserContext, LayoutTypeParser, LayoutTypeValidator } from "../parsing.ts";
+import { LayoutSchemaGenerator, LayoutSchemaGeneratorContext } from "../schema.ts";
+import { JSONSchema } from "../json-schema-types.ts";
 
 export const invalidValidationErrorDef = defineLayoutError(
   "invalid-validation",
   "Value does not conform to the following constraints",
 );
 
-export abstract class AbstractLayoutType<T> implements LayoutSchemaGenerator, LayoutTypeParser<T>, LayoutTrait<T> {
-  public readonly [layoutTraitSymbol] = 1;
-
+export abstract class WithValidatorsLayoutType<T>
+  implements LayoutSchemaGenerator, LayoutTypeParser<T>, LayoutTrait<T> {
   public constructor(
     public validators: LayoutTypeValidator<T>[],
   ) {}
 
-  public abstract [layoutPrimarySchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema;
-  public abstract [layoutTypeParserSymbol](value: unknown, context: LayoutParserContext): LayoutResult<T>;
+  public abstract generatePrimaryTypeSchema(context: LayoutSchemaGeneratorContext): JSONSchema;
+  public abstract parse(value: unknown, context: LayoutParserContext): LayoutResult<T>;
 
   public validate(value: T): LayoutResult<T> {
     const tries: NegativeLayoutResult[] = [];
     for (const validator of this.validators) {
-      const result = validator[layoutTypeValidatorSymbol](value);
+      const result = validator.validate(value);
       if (SingleNegativeLayoutResult.is(result)) {
         tries.push(result);
       }
@@ -47,13 +43,18 @@ export abstract class AbstractLayoutType<T> implements LayoutSchemaGenerator, La
     return new GroupingNegativeLayoutResult(invalidValidationErrorDef, tries);
   }
 
-  public [layoutSchemaGeneratorSymbol](context: LayoutSchemaGeneratorContext): JSONSchema {
+  public generateSchema(context: LayoutSchemaGeneratorContext): JSONSchema {
     const { schemaCreator } = context;
     const schemas = this.validators.map((validator) => {
       return schemaCreator.generateSchema(validator);
     });
-    const targetSchema = this[layoutPrimarySchemaGeneratorSymbol](context);
+    const targetSchema = this.generatePrimaryTypeSchema(context);
     const resultSchema = Object.assign(targetSchema, ...schemas);
     return resultSchema;
+  }
+
+  public init(layout: UnknownLayout): void {
+    layout.parsers.push(this);
+    layout.schemaGenerators.push(this);
   }
 }

@@ -1,17 +1,20 @@
-import { LayoutTrait, layoutTraitSymbol } from "../defs.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../schema/defs.ts";
-import { JSONSchema } from "../schema/json-schema-types.ts";
+import { LayoutTrait, UnknownLayout } from "../defs.ts";
+import { LayoutSchemaGenerator } from "../schema.ts";
+import { JSONSchema } from "../json-schema-types.ts";
 
 export class DescriptionLayoutTrait implements LayoutSchemaGenerator, LayoutTrait<never> {
-  public readonly [layoutTraitSymbol] = 1;
-
   public constructor(
     public description: string,
   ) {}
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     const { description } = this;
     return { description };
+  }
+
+  public init(layout: UnknownLayout): void {
+    layout.description = this.description;
+    layout.schemaGenerators.push(this);
   }
 }
 

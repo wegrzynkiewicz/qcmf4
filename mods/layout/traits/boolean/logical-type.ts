@@ -1,9 +1,8 @@
-import { LayoutTrait, layoutTraitSymbol } from "../../defs.ts";
+import { LayoutTrait } from "../../defs.ts";
 import { defineLayoutError, LayoutResult, PositiveLayoutResult, SingleNegativeLayoutResult } from "../../flow.ts";
-import { layoutTypeParserSymbol } from "../../parsing.ts";
-import { LayoutSchemaGenerator, layoutSchemaGeneratorSymbol } from "../../schema/defs.ts";
-import { JSONSchema } from "../../schema/json-schema-types.ts";
+import { JSONSchema } from "../../json-schema-types.ts";
 import { invalidBooleanErrorDef } from "./boolean-type.ts";
+import { WithoutValidatorsLayoutType } from "../without-validation.ts";
 
 const map = new Map<string | number | boolean | null, boolean>([
   [true, true],
@@ -43,10 +42,8 @@ export const invalidLogicalErrorDef = defineLayoutError(
   "Value does not meet any of boolean criteria.",
 );
 
-export class LogicalLayoutType implements LayoutSchemaGenerator, LayoutTrait<boolean> {
-  public readonly [layoutTraitSymbol] = 1;
-
-  public [layoutTypeParserSymbol](value: unknown): LayoutResult<boolean> {
+export class LogicalLayoutType extends WithoutValidatorsLayoutType<boolean> {
+  public parse(value: unknown): LayoutResult<boolean> {
     for (const [possibleValue, booleanValue] of map.entries()) {
       if (possibleValue === value) {
         return new PositiveLayoutResult(booleanValue);
@@ -55,7 +52,7 @@ export class LogicalLayoutType implements LayoutSchemaGenerator, LayoutTrait<boo
     return new SingleNegativeLayoutResult(invalidBooleanErrorDef);
   }
 
-  public [layoutSchemaGeneratorSymbol](): JSONSchema {
+  public generateSchema(): JSONSchema {
     return {
       enum: keys,
     };
