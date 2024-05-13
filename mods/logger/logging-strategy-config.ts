@@ -1,5 +1,5 @@
 import { provideConfigValueGetter } from "../config/config-value-getter.ts";
-import { InferConfigContract, defineConfigContract } from "../config/defs.ts";
+import { InferConfigContract, defineConfig } from "../config/defs.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { layout } from "../layout/defs.ts";
 import { constant } from "../layout/traits/constant.ts";
@@ -7,7 +7,7 @@ import { description } from "../layout/traits/description.ts";
 import { enumerate } from "../layout/traits/enumerate-type.ts";
 import { key } from "../layout/traits/key.ts";
 
-export const loggingStrategyConfigContract = defineConfigContract(
+export const loggingStrategyConfigContract = defineConfig(
   layout(
     key("logging-strategy"),
     description("Controls log behavior in the app. Behaviors are defined and cannot be changed by other variables"),

@@ -7,7 +7,7 @@ import { Log, SILLY } from "./defs.ts";
 import { provideLoggingStrategy } from "./logging-strategy-config.ts";
 import { PrettyLogFormatter } from "./pretty-log-formatter.ts";
 
-export function provideMainLogChannel(resolver: ServiceResolver) {
+export function provideLogChannel(resolver: ServiceResolver) {
   const channel = new Channel<[Log]>();
 
   const loggingStrategy = resolver.resolve(provideLoggingStrategy);

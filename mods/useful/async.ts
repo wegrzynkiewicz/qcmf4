@@ -1,4 +1,4 @@
-export function withResolvers<T>(): {
+export function withResolvers<T = void>(): {
   promise: Promise<T>;
   resolve: (value: T | PromiseLike<T>) => void;
   reject: (reason: unknown) => void;

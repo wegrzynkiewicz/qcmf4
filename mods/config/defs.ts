@@ -23,7 +23,7 @@ export function provideConfigContractRegistry() {
   return configContractRegistry;
 }
 
-export function defineConfigContract<TLayout extends UnknownLayout>(
+export function defineConfig<TLayout extends UnknownLayout>(
   layout: TLayout,
 ): ConfigContract<InferLayout<TLayout>> {
   const key = layout.key;

@@ -24,7 +24,9 @@ export function formatError(e: unknown): string {
     let msg = e.stack ?? "";
     if (e instanceof Breaker) {
       const json = JSON.stringify(e.options, null, 2);
-      msg += `\n    with parameters:\n${indent(json, "      ")}`;
+      if (json !== "{}") {
+        msg += `\n    with parameters:\n${indent(json, "      ")}`;
+      }
       if (e.previousError) {
         msg += `\n    cause error:\n\n`;
         msg += formatError(e.previousError);

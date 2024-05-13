@@ -1,7 +1,7 @@
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { BasicLogger } from "./basic-logger.ts";
 import { LogChannel, Logger, LoggerData } from "./defs.ts";
-import { provideMainLogChannel } from "./log-channel.ts";
+import { provideLogChannel } from "./log-channel.ts";
 import { nullLogger } from "./null-logger.ts";
 import { provideLoggingStrategy } from "./logging-strategy-config.ts";
 
@@ -31,6 +31,6 @@ export function provideLoggerFactory(resolver: ServiceResolver): LoggerFactory {
     return new NullLoggerFactory();
   }
   return new BasicLoggerFactory(
-    resolver.resolve(provideMainLogChannel),
+    resolver.resolve(provideLogChannel),
   );
 }

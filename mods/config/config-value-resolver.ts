@@ -43,8 +43,8 @@ export function provideConfigValueResolver(resolver: ServiceResolver) {
     [
       resolver.resolve(provideDenoQueryingConfigValueExtractor),
       resolver.resolve(provideDotEnvConfigValueExtractor),
-      resolver.resolve(provideDenoRequestingConfigValueExtractor),
       resolver.resolve(provideBuiltInConfigValueExtractor),
+      resolver.resolve(provideDenoRequestingConfigValueExtractor),
     ],
   );
 }
