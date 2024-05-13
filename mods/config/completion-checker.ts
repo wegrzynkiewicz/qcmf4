@@ -1,23 +1,23 @@
 import { Breaker, formatError } from "../assert/breaker.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
-import { provideConfigEntryResolver } from "./config-entry-resolver.ts";
-import { provideConfigEntryRegistry } from "./defs.ts";
+import { provideConfigValueResolver } from "./config-value-resolver.ts";
+import { provideConfigContractRegistry } from "./defs.ts";
 
-interface CompletionChecker {
+interface ConfigCompletionChecker {
   check: () => Promise<void>;
 }
 
-export function provideCompletionChecker(resolver: ServiceResolver): CompletionChecker {
-  const entryRegistry = resolver.resolve(provideConfigEntryRegistry);
-  const entryResolver = resolver.resolve(provideConfigEntryResolver);
+export function provideConfigCompletionChecker(resolver: ServiceResolver): ConfigCompletionChecker {
+  const configContractRegistry = resolver.resolve(provideConfigContractRegistry);
+  const configValueResolver = resolver.resolve(provideConfigValueResolver);
   const check = async () => {
     const results: unknown[] = [];
-    for (const entry of entryRegistry.entries.values()) {
+    for (const contract of configContractRegistry.entries.values()) {
       try {
-        await entryResolver.resolve(entry);
+        await configValueResolver.resolve(contract);
       } catch (error) {
         const message = formatError(error);
-        results.push({ configEntryKey: entry.key, message });
+        results.push({ configContractKey: contract.key, message });
       }
     }
     if (results.length > 0) {

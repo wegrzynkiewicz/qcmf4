@@ -1,10 +1,10 @@
 import { Breaker } from "../assert/breaker.ts";
-import { UnknownConfigEntryDefinition } from "./defs.ts";
-import { ConfigEntryExtractor, toEnvVarName } from "./defs.ts";
+import { UnknownConfigContract } from "./defs.ts";
+import { ConfigValueExtractor, toEnvVarName } from "./defs.ts";
 
-export class QueryDenoConfigEntryExtractor implements ConfigEntryExtractor {
-  public async get(entry: UnknownConfigEntryDefinition): Promise<string | undefined> {
-    const variable = toEnvVarName(entry.key);
+export class DenoQueryingConfigValueExtractor implements ConfigValueExtractor {
+  public async get(contract: UnknownConfigContract): Promise<string | undefined> {
+    const variable = toEnvVarName(contract.key);
     try {
       const status = await Deno.permissions.query({name: "env", variable});
       if (status.state === "granted") {
@@ -12,11 +12,11 @@ export class QueryDenoConfigEntryExtractor implements ConfigEntryExtractor {
       }
       return undefined;
     } catch (error) {
-      throw new Breaker('error-inside-query-deno-config-entry-extractor', { entryKey: entry.key, error });
+      throw new Breaker('error-inside-deno-querying-config-contract-extractor', { contractKey: contract.key, error });
     }
   }
 }
 
-export function provideQueryDenoConfigEntryExtractor() {
-  return new QueryDenoConfigEntryExtractor();
+export function provideDenoQueryingConfigValueExtractor() {
+  return new DenoQueryingConfigValueExtractor();
 }

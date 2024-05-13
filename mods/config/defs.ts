@@ -3,29 +3,34 @@ import { Registry } from "../dependency/registry.ts";
 import { InferLayout } from "../layout/defs.ts";
 import { UnknownLayout } from "../layout/defs.ts";
 
-export interface ConfigEntryDefinition<TValue> {
+export interface ConfigContract<TValue> {
   __?: () => TValue;
   key: string;
   layout: UnknownLayout;
 }
-export type UnknownConfigEntryDefinition = ConfigEntryDefinition<unknown>;
+export type UnknownConfigContract = ConfigContract<unknown>;
 
-export type InferConfigEntryDefinition<TEntry> = TEntry extends ConfigEntryDefinition<infer TValue> ? TValue : never;
+export type InferConfigContract<T> = T extends ConfigContract<infer TValue> ? TValue : never;
 
-export const configEntryRegistry = new Registry<UnknownConfigEntryDefinition>((e) => e.key);
+export const configContractRegistry = new Registry<UnknownConfigContract>((e) => e.key);
 
-export function provideConfigEntryRegistry() {
-  return configEntryRegistry;
+export interface ConfigContractMap extends Map<UnknownConfigContract, unknown> {
+  set<T>(contract: ConfigContract<T>, value: T): this;
+  get<T>(contract: ConfigContract<T>): T | undefined;
 }
 
-export function defineConfigEntry<TLayout extends UnknownLayout>(
+export function provideConfigContractRegistry() {
+  return configContractRegistry;
+}
+
+export function defineConfigContract<TLayout extends UnknownLayout>(
   layout: TLayout,
-): ConfigEntryDefinition<InferLayout<TLayout>> {
+): ConfigContract<InferLayout<TLayout>> {
   const key = layout.key;
-  assertRequiredString(key, "config-entry-key-is-required");
-  const entry = { key, layout };
-  configEntryRegistry.register(entry);
-  return entry;
+  assertRequiredString(key, "config-contract-key-is-required");
+  const contract = { key, layout };
+  configContractRegistry.register(contract);
+  return contract;
 }
 
 export const toEnvVarName = (kind: string): string => {
@@ -34,6 +39,6 @@ export const toEnvVarName = (kind: string): string => {
   return variable;
 };
 
-export interface ConfigEntryExtractor {
-  get(entry: UnknownConfigEntryDefinition): Promise<unknown>;
+export interface ConfigValueExtractor {
+  get(contract: UnknownConfigContract): Promise<unknown>;
 }

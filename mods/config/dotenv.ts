@@ -1,5 +1,5 @@
 import { Breaker } from "../assert/breaker.ts";
-import { ConfigEntryExtractor, UnknownConfigEntryDefinition, toEnvVarName } from "./defs.ts";
+import { ConfigValueExtractor, UnknownConfigContract, toEnvVarName } from "./defs.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { readDotEnvFiles } from "../deps.ts";
 
@@ -26,24 +26,24 @@ export async function feedDotEnvMap(resolver: ServiceResolver): Promise<void> {
   }
 }
 
-export class DotEnvConfigEntryExtractor implements ConfigEntryExtractor {
+export class DotEnvConfigValueExtractor implements ConfigValueExtractor {
   public constructor(
     public readonly map: DotEnvMap,
   ) { }
 
-  public async get(entry: UnknownConfigEntryDefinition): Promise<string | undefined> {
-    const variable = toEnvVarName(entry.key);
+  public async get(contract: UnknownConfigContract): Promise<string | undefined> {
+    const variable = toEnvVarName(contract.key);
     try {
       const value = this.map.get(variable);
       return value;
     } catch (error) {
-      throw new Breaker('error-inside-dotenv-config-entry-extractor', { entryKey: entry.key, error });
+      throw new Breaker('error-inside-dotenv-config-contract-extractor', { contractKey: contract.key, error });
     }
   }
 }
 
-export function provideDotEnvConfigEntryExtractor(resolver: ServiceResolver) {
-  return new DotEnvConfigEntryExtractor(
+export function provideDotEnvConfigValueExtractor(resolver: ServiceResolver) {
+  return new DotEnvConfigValueExtractor(
     resolver.resolve(provideDotEnvMap),
   );
 }

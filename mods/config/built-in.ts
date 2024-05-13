@@ -1,33 +1,28 @@
 import { Breaker } from "../assert/breaker.ts";
-import { ConfigEntryExtractor, ConfigEntryDefinition, UnknownConfigEntryDefinition } from "./defs.ts";
+import { ConfigValueExtractor, ConfigContract, UnknownConfigContract, ConfigContractMap } from "./defs.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 
-export interface BuiltInMap extends Map<UnknownConfigEntryDefinition, unknown> {
-  set<T>(entry: ConfigEntryDefinition<T>, value: T): this;
-  get<T>(entry: ConfigEntryDefinition<T>): T;
+export function provideBuiltInMap(): ConfigContractMap {
+  return new Map<UnknownConfigContract, unknown>() as ConfigContractMap;
 }
 
-export function provideBuiltInMap(): BuiltInMap {
-  return new Map<UnknownConfigEntryDefinition, unknown>() as BuiltInMap;
-}
-
-export class BuiltInConfigEntryExtractor implements ConfigEntryExtractor {
+export class BuiltInConfigValueExtractor implements ConfigValueExtractor {
   public constructor(
-    public readonly map: BuiltInMap,
+    public readonly map: ConfigContractMap,
   ) { }
 
-  public async get<T>(entry: ConfigEntryDefinition<T>): Promise<T> {
+  public async get<T>(contract: ConfigContract<T>): Promise<T> {
     try {
-      const value = this.map.get(entry);
+      const value = this.map.get(contract);
       return value as T;
     } catch (error) {
-      throw new Breaker('error-inside-dotenv-config-entry-extractor', { entryKey: entry.key, error });
+      throw new Breaker('error-inside-dotenv-config-contract-extractor', { contractKey: contract.key, error });
     }
   }
 }
 
-export function provideBuiltInConfigEntryExtractor(resolver: ServiceResolver) {
-  return new BuiltInConfigEntryExtractor(
+export function provideBuiltInConfigValueExtractor(resolver: ServiceResolver) {
+  return new BuiltInConfigValueExtractor(
     resolver.resolve(provideBuiltInMap),
   );
 }

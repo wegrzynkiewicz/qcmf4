@@ -1,5 +1,5 @@
-import { provideConfigEntryResolver } from "../config/config-entry-resolver.ts";
-import { InferConfigEntryDefinition, defineConfigEntry } from "../config/defs.ts";
+import { provideConfigValueResolver } from "../config/config-value-resolver.ts";
+import { InferConfigContract, defineConfigContract } from "../config/defs.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { layout } from "../layout/defs.ts";
 import { constant } from "../layout/traits/constant.ts";
@@ -7,7 +7,7 @@ import { description } from "../layout/traits/description.ts";
 import { enumerate } from "../layout/traits/enumerate-type.ts";
 import { key } from "../layout/traits/key.ts";
 
-export const loggingStrategyConfigEntry = defineConfigEntry(
+export const loggingStrategyConfigContract = defineConfigContract(
   layout(
     key("logging-strategy"),
     description("Controls log behavior in the app. Behaviors are defined and cannot be changed by other variables"),
@@ -28,9 +28,9 @@ export const loggingStrategyConfigEntry = defineConfigEntry(
   ),
 );
 
-export type LoggingStrategy = InferConfigEntryDefinition<typeof loggingStrategyConfigEntry>;
+export type LoggingStrategy = InferConfigContract<typeof loggingStrategyConfigContract>;
 
 export function provideLoggingStrategy(resolver: ServiceResolver) {
-  const configEntryResolver = resolver.resolve(provideConfigEntryResolver);
-  return configEntryResolver.resolve(loggingStrategyConfigEntry);
+  const configContractResolver = resolver.resolve(provideConfigValueResolver);
+  return configContractResolver.resolve(loggingStrategyConfigContract);
 }
