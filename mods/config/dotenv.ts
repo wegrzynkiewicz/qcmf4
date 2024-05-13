@@ -27,6 +27,8 @@ export async function feedDotEnvMap(resolver: ServiceResolver): Promise<void> {
 }
 
 export class DotEnvConfigValueExtractor implements ConfigValueExtractor {
+  public readonly name = "dotenv";
+
   public constructor(
     public readonly map: DotEnvMap,
   ) { }

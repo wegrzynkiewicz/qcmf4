@@ -40,5 +40,12 @@ export const toEnvVarName = (kind: string): string => {
 };
 
 export interface ConfigValueExtractor {
+  name: string;
   get(contract: UnknownConfigContract): Promise<unknown>;
 }
+
+export interface ConfigValueResult<T> {
+  extractor: ConfigValueExtractor;
+  value: T;
+}
+export type UnknownConfigValueResult = ConfigValueResult<unknown>;

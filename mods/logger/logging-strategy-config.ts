@@ -1,4 +1,4 @@
-import { provideConfigValueResolver } from "../config/config-value-resolver.ts";
+import { provideConfigValueGetter } from "../config/config-value-getter.ts";
 import { InferConfigContract, defineConfigContract } from "../config/defs.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { layout } from "../layout/defs.ts";
@@ -31,6 +31,7 @@ export const loggingStrategyConfigContract = defineConfigContract(
 export type LoggingStrategy = InferConfigContract<typeof loggingStrategyConfigContract>;
 
 export function provideLoggingStrategy(resolver: ServiceResolver) {
-  const configContractResolver = resolver.resolve(provideConfigValueResolver);
-  return configContractResolver.resolve(loggingStrategyConfigContract);
+  const configContractResolver = resolver.resolve(provideConfigValueGetter);
+  const loggingStrategy = configContractResolver.get(loggingStrategyConfigContract);
+  return loggingStrategy;
 }

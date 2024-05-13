@@ -7,6 +7,8 @@ export function provideBuiltInMap(): ConfigContractMap {
 }
 
 export class BuiltInConfigValueExtractor implements ConfigValueExtractor {
+  public readonly name = "built-in";
+
   public constructor(
     public readonly map: ConfigContractMap,
   ) { }

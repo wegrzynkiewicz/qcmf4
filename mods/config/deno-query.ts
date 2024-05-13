@@ -3,10 +3,11 @@ import { UnknownConfigContract } from "./defs.ts";
 import { ConfigValueExtractor, toEnvVarName } from "./defs.ts";
 
 export class DenoQueryingConfigValueExtractor implements ConfigValueExtractor {
+  public readonly name = "query";
   public async get(contract: UnknownConfigContract): Promise<string | undefined> {
     const variable = toEnvVarName(contract.key);
     try {
-      const status = await Deno.permissions.query({name: "env", variable});
+      const status = await Deno.permissions.query({ name: "env", variable });
       if (status.state === "granted") {
         return Deno.env.get(variable);
       }
