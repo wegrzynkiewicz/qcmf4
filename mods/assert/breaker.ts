@@ -37,6 +37,19 @@ export function formatError(e: unknown): string {
   }
 }
 
+export function logError(e: unknown) {
+  const error = formatError(e);
+  const log = {
+    data: { error },
+    date: new Date(),
+    message: 'unexpected-error',
+    severity: "ERROR",
+    topic: "ERROR",
+  }
+  const json = JSON.stringify(log);
+  console.error(json);
+}
+
 export function displayError(error: unknown) {
   console.error(formatError(error));
 }

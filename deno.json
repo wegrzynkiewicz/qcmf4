@@ -11,5 +11,12 @@
     "options": {
       "lineWidth": 120
     }
+  },
+  "lint": {
+    "rules": {
+      "exclude": [
+        "require-await"
+      ]
+    }
   }
 }

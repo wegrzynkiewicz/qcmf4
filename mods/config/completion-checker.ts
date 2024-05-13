@@ -1,22 +1,23 @@
-import { Breaker } from "../assert/breaker.ts";
+import { Breaker, formatError } from "../assert/breaker.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { provideConfigEntryResolver } from "./config-entry-resolver.ts";
 import { provideConfigEntryRegistry } from "./defs.ts";
 
 interface CompletionChecker {
-  check: () => void;
+  check: () => Promise<void>;
 }
 
 export function provideCompletionChecker(resolver: ServiceResolver): CompletionChecker {
   const entryRegistry = resolver.resolve(provideConfigEntryRegistry);
   const entryResolver = resolver.resolve(provideConfigEntryResolver);
-  const check = () => {
+  const check = async () => {
     const results: unknown[] = [];
     for (const entry of entryRegistry.entries.values()) {
       try {
-        entryResolver.resolve(entry);
+        await entryResolver.resolve(entry);
       } catch (error) {
-        results.push({ configEntryName: entry.kind, error });
+        const message = formatError(error);
+        results.push({ configEntryKey: entry.key, message });
       }
     }
     if (results.length > 0) {

@@ -1,12 +1,13 @@
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { Breaker } from "../assert/breaker.ts";
-import { InferLayout, LayoutResult } from "../layout/mod.ts";
-import { UnknownLayout } from "../layout/mod.ts";
 import { LayoutParser, provideLayoutParser } from "../layout/parsing.ts";
 import { ConfigEntryDefinition, ConfigEntryExtractor } from "./defs.ts";
-import { provideDenoEnvConfigEntryExtractor } from "./deno-env-config-extractor.ts";
 import { formatNegativeLayoutResult } from "../layout/flow.ts";
 import { PositiveLayoutResult } from "../layout/flow.ts";
+import { provideQueryDenoConfigEntryExtractor } from "./deno-query.ts";
+import { provideRequestDenoConfigEntryExtractor } from "./deno-request.ts";
+import { provideDotEnvConfigEntryExtractor } from "./dotenv.ts";
+import { provideBuiltInConfigEntryExtractor } from "./built-in.ts";
 
 export class ConfigEntryResolver {
   public constructor(
@@ -14,25 +15,20 @@ export class ConfigEntryResolver {
     private extractors: ConfigEntryExtractor[],
   ) {}
 
-  public resolve<T extends UnknownLayout>(entry: ConfigEntryDefinition<T>): InferLayout<T> {
+  public async resolve<T>(entry: ConfigEntryDefinition<T>): Promise<T> {
     for (const extractor of this.extractors) {
-      const value = extractor.get(entry);
+      const value = await extractor.get(entry);
       if (value === undefined) {
         continue;
       }
-      let result: LayoutResult<InferLayout<T>>;
-      try {
-        result = this.parser.parse(value, entry.layout);
-      } catch (error) {
-        throw new Breaker("error-inside-config-entry-resolve-when-parsing", { entry, error, value });
-      }
+      const result = this.parser.parse(value, entry.layout);
       if (PositiveLayoutResult.is(result) === true) {
         return result.value;
       }
       const message = formatNegativeLayoutResult(result);
       throw new Breaker("invalid-config-entry-parsing", { message });
     }
-    throw new Breaker("all-config-extractor-fail", { entry });
+    throw new Breaker("undefined-config-entry", { entryKey: entry.key });
   }
 }
 
@@ -40,7 +36,10 @@ export function provideConfigEntryResolver(resolver: ServiceResolver) {
   return new ConfigEntryResolver(
     resolver.resolve(provideLayoutParser),
     [
-      resolver.resolve(provideDenoEnvConfigEntryExtractor),
+      resolver.resolve(provideQueryDenoConfigEntryExtractor),
+      resolver.resolve(provideDotEnvConfigEntryExtractor),
+      resolver.resolve(provideRequestDenoConfigEntryExtractor),
+      resolver.resolve(provideBuiltInConfigEntryExtractor ),
     ],
   );
 }
