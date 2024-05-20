@@ -1,7 +1,7 @@
 import { definePermission, defineSecurityPolicy } from "../../../flow/auth.ts";
 import { defineJSONEndpointBody } from "../../../endpoint/bodies.ts";
 import { defaultRequestHeaders, internalErrorEndpointResponseContract } from "../../../endpoint/build-in.ts";
-import { defineEndpoint, EndpointInput, HighEndpointHandler } from "../../../endpoint/defs.ts";
+import { defineEndpoint, EndpointInput, EndpointHandler } from "../../../endpoint/defs.ts";
 import { defineEndpointParameters, segment, variable } from "../../../endpoint/params.ts";
 import { defineEndpointRequest } from "../../../endpoint/requests.ts";
 import { defineEndpointResponse, jsonResponse } from "../../../endpoint/responses.ts";
@@ -85,10 +85,13 @@ export const userCreateEndpointContract = defineEndpoint({
   ],
 });
 
-export class UserCreateEndpointHandler implements HighEndpointHandler<typeof userCreateEndpointContract> {
+export class UserCreateEndpointHandler implements EndpointHandler<typeof userCreateEndpointContract> {
   async handle(input: EndpointInput<typeof userCreateEndpointRequestContract>): Promise<Response> {
     const { params, body, headers } = input;
     return jsonResponse(userCreateEndpointResponseContract, { userId: Identifier.fromString('123') });
   }
 }
 
+export function provideUserCreateEndpointHandler() {
+  return new UserCreateEndpointHandler();
+}

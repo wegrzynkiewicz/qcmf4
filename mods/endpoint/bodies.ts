@@ -20,6 +20,12 @@ export function defineJSONEndpointBody<TLayout extends UnknownLayout>(
   };
 }
 
+export function isJSONEndpointBodyContract<T>(
+  body?: EndpointBodyContract<T> | null
+): body is JSONEndpointBodyContract<T> {
+  return body?.contentType === "application/json";
+}
+
 export type InferEndpointBody<T> = T extends EndpointBodyContract<infer TValue>
   ? TValue
   : never;

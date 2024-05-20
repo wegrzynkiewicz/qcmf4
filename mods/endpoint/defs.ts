@@ -51,10 +51,8 @@ export interface EndpointInput<TRequestContract extends UnknownEndpointRequestCo
   headers: InferEndpointHeadersContract<TRequestContract['headers']>;
 }
 
-export interface EndpointHandler {
-  handle(request: Request): Promise<Response>;
-}
-
-export interface HighEndpointHandler<TEndpointContract extends UnknownEndpointContract> {
+export interface EndpointHandler<TEndpointContract extends UnknownEndpointContract> {
   handle(input: EndpointInput<TEndpointContract["request"]>): Promise<Response>;
 }
+export type UnknownEndpointHandler = EndpointHandler<UnknownEndpointContract>;
+

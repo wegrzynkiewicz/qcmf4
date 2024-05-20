@@ -1,6 +1,6 @@
 import { Breaker } from "../assert/breaker.ts";
 import { Provider } from "../dependency/service-resolver.ts";
-import { EndpointHandler, UnknownEndpointContract } from "../endpoint/defs.ts";
+import { UnknownEndpointContract } from "../endpoint/defs.ts";
 
 export interface WebServerHandler {
   handle(req: Request): Promise<Response>;
@@ -25,6 +25,6 @@ export function provideEndpointContract(): UnknownEndpointContract {
 }
 
 export function provideWebServerRouteMap() {
-  return new Map<UnknownEndpointContract, Provider<EndpointHandler>>();
+  return new Map<UnknownEndpointContract, Provider<WebServerHandler>>();
 }
 export type WebServerRouteMap = ReturnType<typeof provideWebServerRouteMap>;

@@ -25,8 +25,8 @@ export class Router implements WebServerHandler {
         requestId,
       });
       try {
-        const endpointHandler = resolver.resolve(provider);
-        const response = await endpointHandler.handle(request);
+        const handler = resolver.resolve(provider);
+        const response = await handler.handle(request);
         response.headers.set('x-request-id', requestId);
         return response;
       } catch (error: unknown) {

@@ -45,6 +45,14 @@ export const internalErrorEndpointResponseContract = defineEndpointResponse({
   status: 500,
 });
 
+export const badRequestErrorEndpointResponseContract = defineEndpointResponse({
+  body: defineJSONEndpointBody(errorOutputLayout),
+  description: "The request was malformed",
+  headers: defineEndpointHeaders(),
+  key: "bad-request-error-response",
+  status: 400,
+});
+
 export const notFoundErrorEndpointResponseContract = defineEndpointResponse({
   body: defineJSONEndpointBody(errorOutputLayout),
   description: "The requested resource was not found",
