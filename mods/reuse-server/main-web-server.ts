@@ -5,8 +5,11 @@ import { description } from "../layout/traits/description.ts";
 import { key } from "../layout/traits/key.ts";
 import { number } from "../layout/traits/number/number-type.ts";
 import { string } from "../layout/traits/string/string-type.ts";
-import { provideWebServerScopeManager } from "../web/context.ts";
+import { provideWebServerScopeManager } from "../web/web-server-scope.ts";
 import { provideWebServer } from "../web/server.ts";
+import { provideWebServerRouteMap } from "../web/defs.ts";
+import { healthEndpointContract } from "./health/health-endpoint.ts";
+import { provideHealthEndpointHandler } from "./health/health-handler.ts";
 
 export const mainWebServerHostnameConfigContract = defineConfig(
   layout(
@@ -26,11 +29,16 @@ export const mainWebServerPortConfigContract = defineConfig(
 
 export async function runMainWebServer(parentResolver: ServiceResolver) {
   const webServerScopeManager = parentResolver.resolve(provideWebServerScopeManager);
-  const { resolver } = webServerScopeManager.createScope({
+  const { resolver } = webServerScopeManager.createWebServerScope({
     hostname: mainWebServerHostnameConfigContract,
     name: 'main',
     port: mainWebServerPortConfigContract,
   });
+
+  const routes = resolver.resolve(provideWebServerRouteMap);
+
+  routes.set(healthEndpointContract, provideHealthEndpointHandler);
+
   const webServer = resolver.resolve(provideWebServer);
   await webServer.listen();
 }

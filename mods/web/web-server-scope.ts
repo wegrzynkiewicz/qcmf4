@@ -3,7 +3,6 @@ import { ConfigContract } from "../config/defs.ts";
 import { Scope, defineScope, provideScope } from "../dependency/scope.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { provideLogger } from "../logger/defs.ts";
-import { provideLoggerFactory } from "../logger/logger-factory.ts";
 import { WebServerConfig, provideWebServerConfig } from "./defs.ts";
 
 export type WebServerScope = Scope<{ name: string }>;
@@ -15,15 +14,16 @@ export interface WebServerScopeInput {
 }
 
 export interface WebServerScopeManager {
-  createScope(input: WebServerScopeInput): WebServerScope;
+  createWebServerScope(input: WebServerScopeInput): WebServerScope;
 }
 
 export function provideWebServerScopeManager(resolver: ServiceResolver): WebServerScopeManager {
-  const parent = resolver.resolve(provideScope);
+  const parentScope = resolver.resolve(provideScope);
+  const parentLogger = resolver.resolve(provideLogger);
 
-  const createScope = (input: WebServerScopeInput) => {
+  const createWebServerScope = (input: WebServerScopeInput) => {
     const { hostname, name, port } = input;
-    const webServerScope = defineScope('web', { name }, parent);
+    const webServerScope = defineScope('web', { name }, parentScope);
     const { resolver } = webServerScope;
 
     const configValueGetter = resolver.resolve(provideConfigValueGetter);
@@ -34,12 +34,11 @@ export function provideWebServerScopeManager(resolver: ServiceResolver): WebServ
     }
     resolver.inject(provideWebServerConfig, webServerConfig);
 
-    const loggerFactory = resolver.resolve(provideLoggerFactory);
-    const logger = loggerFactory.createLogger('WEB', { web: name });
+    const logger = parentLogger.extend('WEB', { web: name });
     resolver.inject(provideLogger, logger);
 
     return webServerScope;
   }
 
-  return { createScope }
+  return { createWebServerScope }
 }

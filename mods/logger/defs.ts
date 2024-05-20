@@ -1,7 +1,11 @@
-import { Breaker } from "../assert/breaker.ts";
 import { Subscriber } from "../dependency/channel.ts";
 import { Channel } from "../dependency/channel.ts";
+import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { brightCyan, brightRed, brightYellow, dim } from "../deps.ts";
+import { BasicLogger } from "./basic-logger.ts";
+import { provideLogChannel } from "./log-channel.ts";
+import { provideLoggingStrategy } from "./logging-strategy-config.ts";
+import { NullLogger } from "./null-logger.ts";
 
 export type LoggerData = Record<string, unknown>;
 
@@ -56,6 +60,14 @@ export type LogChannel = Channel<[Log]>;
 
 export type LogSubscriber = Subscriber<[Log]>;
 
-export function provideLogger(): Logger {
-  throw new Breaker("logger-must-be-injected");
+export function provideLogger(resolver: ServiceResolver): Logger {
+  const loggingStrategy = resolver.resolve(provideLoggingStrategy);
+  if (loggingStrategy === "none") {
+    return new NullLogger();
+  }
+  return new BasicLogger(
+    resolver.resolve(provideLogChannel),
+    "ROOT",
+    {},
+  );
 }

@@ -5,14 +5,15 @@ import { withResolvers } from "../useful/async.ts";
 import { WebServerConfig, WebServerHandler, provideWebServerConfig } from "./defs.ts";
 import { provideWebRouter } from "./router.ts";
 
-export function truncateRequestSensitiveHeaders(req: Request): Headers {
-  const headers = new Headers(req.headers);
-  const authorization = headers.get('authorization');
+export function truncateRequestSensitiveHeaders(headers: Headers): Record<string, string> {
+  const copyHeaders = new Headers(headers);
+  const authorization = copyHeaders.get('authorization');
   if (authorization) {
     const part = authorization.substring(0, 15);
-    headers.set("authorization", `${part}... [truncated]`);
+    copyHeaders.set("authorization", `${part}... [truncated]`);
   }
-  return headers;
+  const raw = Object.fromEntries(copyHeaders.entries());
+  return raw;
 }
 
 export class WebServer {
@@ -51,15 +52,17 @@ export class WebServer {
     this.abortController.abort(reason);
   }
 
-  private async handle(req: Request): Promise<Response> {
-    const { method, url } = req;
-    const headers = truncateRequestSensitiveHeaders(req);
-    this.logger.silly("web-server-handling", { headers, method, url });
+  private async handle(request: Request): Promise<Response> {
+    const { method, url } = request;
+    const headers = truncateRequestSensitiveHeaders(request.headers);
+    this.logger.silly("web-server-request", { headers, method, url });
     try {
-      const response = await this.handler.handle(req);
+      const response = await this.handler.handle(request);
+      const { status } = response;
+      this.logger.silly("web-server-response", { status, method, url });
       return response;
     } catch (error) {
-      throw new Breaker("error-inside-web-server-handler", { error, headers, method, url });
+      throw new Breaker("error-inside-web-server-handle", { error, headers, method, url });
     }
   }
 

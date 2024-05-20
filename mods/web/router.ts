@@ -1,53 +1,48 @@
 import { Breaker } from "../assert/breaker.ts";
-import { WebServerHandler } from "./defs.ts";
-
-export interface RouteBinding {
-  handler: EPHandler;
-  route: EPRoute;
-}
+import { ServiceResolver } from "../dependency/service-resolver.ts";
+import { notFoundErrorEndpointResponseContract } from "../endpoint/build-in.ts";
+import { jsonResponse } from "../endpoint/responses.ts";
+import { WebServerHandler, WebServerRouteMap, provideWebServerRouteMap } from "./defs.ts";
+import { WebRequestScopeManager, provideWebRequestScopeManager } from "./web-request-scope.ts";
 
 export class Router implements WebServerHandler {
-  private readonly bindings: RouteBinding[] = [];
 
-  public add(route: EPRoute, handler: EPHandler): void {
-    const binding: RouteBinding = { handler, route };
-    this.bindings.push(binding);
-  }
+  public constructor(
+    private readonly requestScopeManager: WebRequestScopeManager,
+    private readonly routes: WebServerRouteMap,
+  ) { }
 
-  public async handle(req: Request): Promise<Response> {
-    for (const { handler, route } of this.bindings) {
-      const { method, urlPattern } = route;
-      if (req.method === method && urlPattern.test(req.url)) {
-        const match = urlPattern.exec(req.url);
-        if (match === null) {
-          throw new Breaker("cannot-match-url-params", { req, urlPattern });
-        }
-        const context: EPContext = {
-          params: { ...match.pathname.groups },
-          request: req,
-          url: new URL(req.url),
-        };
-        try {
-          const response = await handler.handle(context);
-          return response;
-        } catch (error: unknown) {
-          throw new Breaker("error-inside-router", {
-            error,
-            method,
-            urlPattern: {
-              pathname: urlPattern.pathname,
-            },
-          });
-        }
+  public async handle(request: Request): Promise<Response> {
+    for (const [contract, provider] of this.routes.entries()) {
+      const { method, params } = contract.request;
+      if (request.method !== method || params.urlPattern.test(request.url) === false) {
+        continue;
+      }
+      const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID();
+      const { resolver } = this.requestScopeManager.createWebRequestScope({
+        contract,
+        request,
+        requestId,
+      });
+      try {
+        const endpointHandler = resolver.resolve(provider);
+        const response = await endpointHandler.handle(request);
+        response.headers.set('x-request-id', requestId);
+        return response;
+      } catch (error: unknown) {
+        throw new Breaker("error-inside-router", { error, contractKey: contract.key, requestId });
       }
     }
     const payload = {
-      error: "url-not-match",
+      error: "not-found-endpoint",
     };
-    const response = Response.json(payload, { status: 404 });
+    return jsonResponse(notFoundErrorEndpointResponseContract, payload);
   }
 }
 
-export function provideWebRouter(): Router {
-  return new Router();
+export function provideWebRouter(resolver: ServiceResolver): Router {
+  return new Router(
+    resolver.resolve(provideWebRequestScopeManager),
+    resolver.resolve(provideWebServerRouteMap),
+  );
 }

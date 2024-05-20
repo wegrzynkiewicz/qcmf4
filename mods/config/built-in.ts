@@ -2,7 +2,7 @@ import { Breaker } from "../assert/breaker.ts";
 import { ConfigValueExtractor, ConfigContract, UnknownConfigContract, ConfigContractMap } from "./defs.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 
-export function provideBuiltInMap(): ConfigContractMap {
+export function provideBuiltInConfigMap(): ConfigContractMap {
   return new Map<UnknownConfigContract, unknown>() as ConfigContractMap;
 }
 
@@ -25,6 +25,6 @@ export class BuiltInConfigValueExtractor implements ConfigValueExtractor {
 
 export function provideBuiltInConfigValueExtractor(resolver: ServiceResolver) {
   return new BuiltInConfigValueExtractor(
-    resolver.resolve(provideBuiltInMap),
+    resolver.resolve(provideBuiltInConfigMap),
   );
 }
