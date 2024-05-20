@@ -6,7 +6,7 @@ import { defineEndpointParameters, segment, variable } from "../../../endpoint/p
 import { defineEndpointRequest } from "../../../endpoint/requests.ts";
 import { defineEndpointResponse, jsonResponse } from "../../../endpoint/responses.ts";
 import { Identifier } from "../../../flow/identifier.ts";
-import { defineMutation } from "../../../flow/mutation.ts";
+import { defineAction } from "../../../flow/action.ts";
 import { layout, InferLayout } from "../../../layout/defs.ts";
 import { identifier } from "../../../layout/traits/identifier-type.ts";
 import { key } from "../../../layout/traits/key.ts";
@@ -42,8 +42,9 @@ export const userCreatePermissionPolicy = defineSecurityPolicy(
   userCreatePermissionContract,
 )
 
-export const userCreateMutationContract = defineMutation<UserCreatePointer, UserCreateInput, UserCreateOutput>({
+export const userCreateMutationContract = defineAction<UserCreatePointer, UserCreateInput, UserCreateOutput>({
   key: 'user-create',
+  mutation: true,
   security: userCreatePermissionPolicy,
 });
 
