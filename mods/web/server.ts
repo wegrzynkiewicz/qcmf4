@@ -2,8 +2,8 @@ import { Breaker } from "../assert/breaker.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { Logger, provideLogger } from "../logger/defs.ts";
 import { withResolvers } from "../useful/async.ts";
-import { WebServerConfig, WebServerHandler, provideWebServerConfig } from "./defs.ts";
-import { provideWebRouter } from "./router.ts";
+import { WebConfig, WebHandler, provideWebConfig } from "./defs.ts";
+import { provideWebHandlerRunner } from "./runner.ts";
 
 export function truncateRequestSensitiveHeaders(headers: Headers): Record<string, string> {
   const copyHeaders = new Headers(headers);
@@ -20,8 +20,8 @@ export class WebServer {
   private readonly abortController = new AbortController();
 
   public constructor(
-    private readonly config: WebServerConfig,
-    private readonly handler: WebServerHandler,
+    private readonly config: WebConfig,
+    private readonly handler: WebHandler,
     private readonly logger: Logger,
   ) { }
 
@@ -82,8 +82,8 @@ export class WebServer {
 
 export function provideWebServer(resolver: ServiceResolver) {
   return new WebServer(
-    resolver.resolve(provideWebServerConfig),
-    resolver.resolve(provideWebRouter),
+    resolver.resolve(provideWebConfig),
+    resolver.resolve(provideWebHandlerRunner),
     resolver.resolve(provideLogger),
   );
 }

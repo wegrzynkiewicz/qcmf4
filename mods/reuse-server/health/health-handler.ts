@@ -1,18 +1,26 @@
-import { EndpointHandler } from "../../endpoint/defs.ts";
-import { jsonResponse } from "../../endpoint/responses.ts";
-import { HealthOutput, healthEndpointResponseContract } from "./health-endpoint.ts";
-import { healthEndpointContract } from "./health-endpoint.ts";
+import { ActionHandler, defineAction } from "../../flow/action.ts";
+import { defineSecurityPolicy } from "../../flow/auth.ts";
+import { success } from "../../useful/result.ts";
+import { HealthOutput, healthEndpointContract } from "./common.ts";
 
-export class HealthEndpointHandler implements EndpointHandler<typeof healthEndpointContract> {
-  async handle(): Promise<Response> {
+export const healthActionContract = defineAction<null, HealthOutput>({
+  key: 'health-read',
+  mutation: false,
+  security: defineSecurityPolicy(),
+});
+
+export class HealthActionHandler implements ActionHandler<typeof healthActionContract> {
+  async handle() {
     const payload: HealthOutput = {
       date: new Date(),
       status: 'UP',
-    }
-    return jsonResponse(healthEndpointResponseContract, payload);
+    };
+    return success(payload);
   }
 }
 
-export function provideHealthEndpointHandler() {
-  return new HealthEndpointHandler();
+export function provideHealthActionHandler() {
+  return new HealthActionHandler();
 }
+
+export const provideHealthWebHandler = createActionWebHandler(healthEndpointContract, healthActionContract);

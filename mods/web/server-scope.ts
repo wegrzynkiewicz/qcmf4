@@ -3,7 +3,7 @@ import { ConfigContract } from "../config/defs.ts";
 import { Scope, defineScope, provideScope } from "../dependency/scope.ts";
 import { ServiceResolver } from "../dependency/service-resolver.ts";
 import { provideLogger } from "../logger/defs.ts";
-import { WebServerConfig, provideWebServerConfig } from "./defs.ts";
+import { WebConfig, provideWebConfig } from "./defs.ts";
 
 export type WebServerScope = Scope<{ name: string }>;
 
@@ -27,12 +27,12 @@ export function provideWebServerScopeManager(resolver: ServiceResolver): WebServ
     const { resolver } = webServerScope;
 
     const configValueGetter = resolver.resolve(provideConfigValueGetter);
-    const webServerConfig: WebServerConfig = {
+    const webServerConfig: WebConfig = {
       hostname: configValueGetter.get(hostname),
       name,
       port: configValueGetter.get(port),
     }
-    resolver.inject(provideWebServerConfig, webServerConfig);
+    resolver.inject(provideWebConfig, webServerConfig);
 
     const logger = parentLogger.extend('WEB', { web: name });
     resolver.inject(provideLogger, logger);

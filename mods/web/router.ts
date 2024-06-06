@@ -1,48 +1,31 @@
-import { Breaker } from "../assert/breaker.ts";
-import { ServiceResolver } from "../dependency/service-resolver.ts";
-import { notFoundErrorEndpointResponseContract } from "../endpoint/build-in.ts";
-import { jsonResponse } from "../endpoint/responses.ts";
-import { WebServerHandler, WebServerRouteMap, provideWebServerRouteMap } from "./defs.ts";
-import { WebRequestScopeManager, provideWebRequestScopeManager } from "./web-request-scope.ts";
+import { Provider } from "../dependency/service-resolver.ts";
+import { UnknownEndpointContract } from "../endpoint/defs.ts";
+import { WebHandler } from "./defs.ts";
 
-export class Router implements WebServerHandler {
+export interface Route {
+  contract: UnknownEndpointContract;
+  provider: Provider<WebHandler>;
+}
 
-  public constructor(
-    private readonly requestScopeManager: WebRequestScopeManager,
-    private readonly routes: WebServerRouteMap,
-  ) { }
+export class Router {
+  private routes: Route[] = [];
 
-  public async handle(request: Request): Promise<Response> {
-    for (const [contract, provider] of this.routes.entries()) {
-      const { method, params } = contract.request;
-      if (request.method !== method || params.urlPattern.test(request.url) === false) {
-        continue;
-      }
-      const requestId = request.headers.get('x-request-id') ?? crypto.randomUUID();
-      const { resolver } = this.requestScopeManager.createWebRequestScope({
-        contract,
-        request,
-        requestId,
-      });
-      try {
-        const handler = resolver.resolve(provider);
-        const response = await handler.handle(request);
-        response.headers.set('x-request-id', requestId);
-        return response;
-      } catch (error: unknown) {
-        throw new Breaker("error-inside-router", { error, contractKey: contract.key, requestId });
+  public add(contract: UnknownEndpointContract, provider: Provider<WebHandler>) {
+    const route: Route = { contract, provider };
+    this.routes.push(route);
+  }
+
+  public match(request: Request): Route | null {
+    for (const route of this.routes) {
+      const { method, params } = route.contract.request;
+      if (request.method === method && params.urlPattern.test(request.url)) {
+        return route;
       }
     }
-    const payload = {
-      error: "not-found-endpoint",
-    };
-    return jsonResponse(notFoundErrorEndpointResponseContract, payload);
+    return null;
   }
 }
 
-export function provideWebRouter(resolver: ServiceResolver): Router {
-  return new Router(
-    resolver.resolve(provideWebRequestScopeManager),
-    resolver.resolve(provideWebServerRouteMap),
-  );
+export function provideRouter() {
+  return new Router();
 }

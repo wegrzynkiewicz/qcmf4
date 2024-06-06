@@ -1,3 +1,4 @@
+import { Breaker } from "../assert/breaker.ts";
 import { InferEndpointBody } from "./bodies.ts";
 import { InferEndpointHeadersContract } from "./headers.ts";
 import { InferEndpointParametersContract } from "./params.ts";
@@ -40,19 +41,8 @@ export function defineEndpoint<
     securities: EndpointSecuritySchemaContract[];
   },
 ): EndpointContract<TRequest, TResponses> {
+  if (responses.length === 0) {
+    throw new Breaker('endpoint-must-have-at-least-one-response');
+  }
   return { key, request, responses, securities };
 }
-
-export interface EndpointInput<TRequestContract extends UnknownEndpointRequestContract> {
-  body: InferEndpointBody<TRequestContract['body']>;
-  contract: TRequestContract
-  params: InferEndpointParametersContract<TRequestContract['params']>;
-  request: Request;
-  headers: InferEndpointHeadersContract<TRequestContract['headers']>;
-}
-
-export interface EndpointHandler<TEndpointContract extends UnknownEndpointContract> {
-  handle(input: EndpointInput<TEndpointContract["request"]>): Promise<Response>;
-}
-export type UnknownEndpointHandler = EndpointHandler<UnknownEndpointContract>;
-
